@@ -1,0 +1,26 @@
+# Snakemake and showyourwork temporaries
+**/.snakemake
+**/.showyourwork*
+
+# Showyourwork output files
+/*.pdf
+report.html
+arxiv.tar.gz
+
+# Figure output
+src/tex/figures/*
+
+# Local build artifacts
+/src/tex/ms.aux
+/src/tex/ms.bbl
+/src/tex/ms.blg
+/src/tex/ms.fdb_latexmk
+/src/tex/ms.fls
+/src/tex/ms.log
+/src/tex/ms.out
+
+# Miscellaneous
+__pycache__
+*.synctex.gz
+revisions/*
+/src/scripts/nbs

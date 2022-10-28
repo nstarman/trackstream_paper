@@ -1,0 +1,24 @@
+[tool.autopep8]
+max_line_length = 120
+ignore = "E203,E501"
+
+
+[tool.black]
+line-length = 120
+
+
+[tool.isort]
+profile = "black"
+line_length = 120
+skip_glob = [".snakemake/*"]
+sections=["FUTURE","STDLIB","THIRDPARTY","FIRSTPARTY","LOCALFOLDER"]
+import_heading_stdlib="STDLIB"
+import_heading_thirdparty="THIRD-PARTY"
+import_heading_firstparty="FIRST-PARTY"
+import_heading_localfolder="LOCAL"
+known_first_party = ["paths", "conf"]
+
+[tool.ruff]
+line-length = 120
+select = ["A", "B", "D", "E", "F", "M", "N", "Q", "RUF", "S", "T", "U", "W", "YTT"]
+ignore = ["B008", "D105", "D107", "D203", "D213", "D417", "N80", "B011"]

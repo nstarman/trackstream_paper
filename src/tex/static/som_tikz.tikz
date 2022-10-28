@@ -1,0 +1,147 @@
+\begin{tikzpicture}
+	\begin{pgfonlayer}{nodelayer}
+		\node [style=none] (30) at (-10.75, -4) {};
+		\node [style=none] (0) at (-12.25, 0) {};
+		\node [style=SOM node] (25) at (-4, 3.25) {$q_2$};
+		\node [style=none] (46) at (-2.25, -0.75) {};
+		\node [style=none] (24) at (-1.25, -3.5) {};
+		\node [style=none] (1) at (-4, 3.25) {};
+		\node [style=SOM node] (27) at (1, -0.25) {$q_3$};
+		\node [style=none] (47) at (-6.25, -0.25) {};
+		\node [style=none] (29) at (-13.75, 3.75) {};
+		\node [style=none] (15) at (-5.5, 7) {};
+		\node [style=SOM node] (28) at (8, 1.5) {$q_4$};
+		\node [style=none] (34) at (7, 5.25) {};
+		\node [style=none] (35) at (9, -2.5) {};
+		\node [style=SOM node] (26) at (-12.25, 0) {$q_1$};
+		\node [style=none] (2) at (1, -0.25) {};
+		\node [style=none] (23) at (2, -4.25) {};
+		\node [style=none] (17) at (-1.75, 6.5) {};
+		\node [style=none] (3) at (8, 1.5) {};
+		\node [style=data] (5) at (-14.5, 1.25) {$d_2$};
+		\node [style=data] (6) at (-4.25, 5.5) {$d_4$};
+		\node [style=data] (7) at (-5.75, -0.5) {$d_3$};
+		\node [style=data] (8) at (10.75, 0.5) {$d_{12}$};
+		\node [style=data] (10) at (4.75, 2.5) {$d_{10}$};
+		\node [style=data] (12) at (-3.25, 6) {$d_5$};
+		\node [style=none] (13) at (-6.75, 2.25) {${e_1}$};
+		\node [style=none] (21) at (5.25, 0.75) {$e_5$};
+		\node [style=data] (11) at (0, -2.5) {$d_8$};
+		\node [style=data] (9) at (1, -1.75) {$d_9$};
+		\node [style=none] (14) at (-3.25, 2.75) {${e_2}$};
+		\node [style=none] (31) at (-15.75, -1.5) {};
+		\node [style=none] (33) at (-13.75, -0.5) {};
+		\node [style=none] (36) at (10.75, 2.25) {};
+		\node [style=none] (37) at (10.25, 2) {};
+		\node [style=data] (38) at (-1.75, 4) {$d_6$};
+		\node [style=data] (39) at (-1, -0.5) {$d_7$};
+		\node [style=none] (40) at (-2.75, 2.5) {$e_3$};
+		\node [style=none] (41) at (-0.25, 0.5) {$e_4$};
+		\node [style=data] (42) at (-14.75, -2.5) {$d_1$};
+		\node [style=none] (43) at (-15.25, -1.25) {};
+		\node [style=data] (44) at (8.25, 3.25) {$d_{11}$};
+		\node [style=none] (45) at (8.75, 1.75) {};
+		\node [style=none] (48) at (3.25, 3) {};
+		\node [style=none] (49) at (0, 3.5) {};
+		\node [style=label] (50) at (-11, 6.25) {t (affine parameter)};
+		\node [style=none] (51) at (-15.25, 4) {};
+		\node [style=none] (52) at (-5.75, 7.75) {};
+		\node [style=none] (53) at (-1.25, 7.25) {};
+	\end{pgfonlayer}
+	\begin{pgfonlayer}{edgelayer}
+		\draw [style=region 1] (46.center)
+			 to (25.center)
+			 to (0.center)
+			 to (30.center)
+			 to cycle;
+		\draw [style=region 2] (1.center)
+			 to (47.center)
+			 to (24.center)
+			 to (27.center)
+			 to cycle;
+		\draw [style=region 1] (15.center)
+			 to (25.center)
+			 to (0.center)
+			 to (29.center)
+			 to cycle;
+		\draw [style=convex sweep] (34.center)
+			 to [bend left=90, looseness=1.25] (35.center)
+			 to (28.center)
+			 to cycle;
+		\draw [style=convex sweep] (29.center)
+			 to (26.center)
+			 to (30.center)
+			 to [bend right=270, looseness=1.50] cycle;
+		\draw [style=convex sweep] (2.center)
+			 to (24.center)
+			 to [bend right=15] (23.center)
+			 to cycle;
+		\draw [style=convex sweep] (17.center)
+			 to (1.center)
+			 to (15.center)
+			 to [bend left, looseness=0.75] cycle;
+		\draw [style=direction] (0.center)
+			 to (1.center)
+			 to (2.center)
+			 to (3.center);
+		\draw [style=projection] (7) to (13.center);
+		\draw [style=projection] (7) to (14.center);
+		\draw [style=path] (5) to (7);
+		\draw [style=path] (7) to (6);
+		\draw [style=path] (6) to (12);
+		\draw [style=path] (11) to (9);
+		\draw [style=path] (9) to (10);
+		\draw [style=projection] (11) to (2.center);
+		\draw [style=projection] (2.center) to (9);
+		\draw [style=projection] (6) to (1.center);
+		\draw [style=projection] (12) to (1.center);
+		\draw [style=projection] (7) to (1.center);
+		\draw [style=projection] (7) to (0.center);
+		\draw [style=projection] (5) to (0.center);
+		\draw [style=projection] (3.center) to (8);
+		\draw [style=projection] (3.center) to (10);
+		\draw [style=projection] (10) to (21.center);
+		\draw [style=projection] (31.center) to (26);
+		\draw [style=projection] (33.center) to (5);
+		\draw [style=projection] (28) to (36.center);
+		\draw [style=projection] (8) to (37.center);
+		\draw [style=path] (12) to (38);
+		\draw [style=path] (38) to (39);
+		\draw [style=path] (39) to (11);
+		\draw [style=projection] (38) to (40.center);
+		\draw [style=projection] (41.center) to (39);
+		\draw [style=projection] (42) to (43.center);
+		\draw [style=path] (42) to (5);
+		\draw [style=projection] (44) to (45.center);
+		\draw [style=path] (10) to (44);
+		\draw [style=path] (44) to (8);
+		\draw [style=projection] (27) to (10);
+		\draw [style=projection] (42) to (0.center);
+		\draw [style=projection] (39) to (27);
+		\draw [style=projection] (39) to (25);
+		\draw [style=projection] (25) to (38);
+		\draw [style=projection] (38) to (27);
+		\draw [style=region 2] (17.center)
+			 to (48.center)
+			 to (2.center)
+			 to (1.center)
+			 to cycle;
+		\draw [style=region 3] (23.center)
+			 to (35.center)
+			 to (3.center)
+			 to (2.center)
+			 to cycle;
+		\draw [style=region 3] (49.center)
+			 to (34.center)
+			 to (3.center)
+			 to (2.center)
+			 to cycle;
+		\draw [style=projection] (7) to (2.center);
+		\draw [style=direction] (51.center) to (52.center);
+		\draw [style=direction] (1.center) to (2.center);
+		\draw [style=direction] (2.center) to (3.center);
+		\draw [style=direction] (3.center) to (36.center);
+		\draw [style=direction] (31.center) to (26);
+		\draw [style=direction, bend left, looseness=0.75] (52.center) to (53.center);
+	\end{pgfonlayer}
+\end{tikzpicture}

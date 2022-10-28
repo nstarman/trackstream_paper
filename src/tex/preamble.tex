@@ -1,0 +1,61 @@
+% Rename Sections
+\renewcommand{\sectionautorefname}{Section}
+\renewcommand{\subsectionautorefname}{Section}
+\renewcommand{\subsubsectionautorefname}{Section}
+\renewcommand{\appendixautorefname}{Appendix}
+
+% Text
+\newcommand{\tbf}[1]{\textbf{#1}}
+
+% Math
+\newcommand{\norm}[1]{\lVert #1 \rVert}
+\newcommand{\mbf}[1]{\mathbf{#1}}
+\newcommand{\mboxbf}[1]{\mbox{\boldmath$#1$}}
+\newcommand{\mfrak}[1]{\mathfrak{#1}}
+\newcommand{\mcal}[1]{\mathcal{#1}}
+
+% Jargon
+\newcommand{\stream}[1]{#1}
+\newcommand{\nbody}{$N$-body simulation}
+\newcommand{\nbodys}{$N$-body simulations}
+\newcommand{\gaia}{\texttt{Gaia}}
+
+% Packages / projects / programming
+\newcommand{\package}[1]{\texttt{#1}\xspace}
+\newcommand{\github}{\package{GitHub}}
+\newcommand{\python}{\package{Python}}
+
+% \newcommand{\trackstream}{\href{https://github.com/nstarman/trackstream}{\package{TrackStream}}}
+\newcommand{\trackstream}{\package{TrackStream}}
+
+\newcommand{\astropy}{Astropy\xspace}
+\newcommand{\astropypkg}{\package{astropy}}
+
+\newcommand{\astropysubpkg}[1]{\href{http://docs.astropy.org/en/stable/#1/index.html}{\texttt{astropy.#1}}\xspace}
+\newcommand{\astropyunits}{\astropysubpkg{units}}
+\newcommand{\astropycoordinates}{\astropysubpkg{coordinates}}
+\newcommand{\astropyconstants}{\astropysubpkg{constants}}
+\newcommand{\astropytable}{\astropysubpkg{table}}
+\newcommand{\astropyapi}[2]{\href{https://docs.astropy.org/en/stable/api/astropy.#1.html}{#2}}
+\newcommand{\astropyapidoc}[2]{\astropyapi{#1}{\texttt{#2}\xspace}}
+
+\newcommand{\astropySkyCoord}{\astropyapidoc{coordinates.SkyCoord}{SkyCoord}}
+\newcommand{\astropyICRS}{\astropyapidoc{coordinates.builtin_frames.ICRS}{ICRS}}
+\newcommand{\astropyGalactocentric}{\astropyapidoc{coordinates.builtin_frames.Galactocentric}{Galactocentric}}
+\newcommand{\astropySkyOffsetFrame}{\astropyapidoc{coordinates.builtin_frames.SkyOffsetFrame}{SkyOffsetFrame}}
+\newcommand{\astropyTable}{\astropyapidoc{table.Table}{Table}}
+\newcommand{\astropyQTable}{\astropyapidoc{table.QTable}{QTable}}
+\newcommand{\astropyUnit}{\astropyapidoc{units.Unit}{Unit}}
+\newcommand{\astropyQuantity}{\astropyapidoc{units.Quantity}{Quantity}}
+
+
+\newcommand{\galpy}{\package{galpy}}
+\newcommand{\galpyapi}[2]{\href{https://docs.galpy.org/en/stable/#1.html}{#2}}
+\newcommand{\galpyapidoc}[2]{\galpyapi{#1}{\texttt{#2}\xspace}}
+\newcommand{\galpystreamdf}{\galpyapidoc{streamdf}{streamdf}}
+\newcommand{\galpystreamspraydf}{\galpyapidoc{streamdf}{streamspraydf}}
+\newcommand{\galpyMWPotential}{\href{https://docs.galpy.org/en/stable/reference/potential.html?highlight=MWPotential2014}{\texttt{MWPotential2014}}{}}
+\newcommand{\galpyLogHaloPotential}{\href{https://docs.galpy.org/en/stable/reference/potentialloghalo.html}{\texttt{LogarithmicHaloPotential}}}
+
+
+\newcommand{\nbodysix}{\texttt{NBODY6}}
