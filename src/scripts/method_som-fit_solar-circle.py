@@ -15,11 +15,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.gridspec import GridSpec
 from matplotlib.patheffects import withStroke
+
+# FIRST-PARTY
 from trackstream import Stream
 from trackstream.track import FitterStreamArmTrack
 from trackstream.track.width import Cartesian3DWidth, Widths
 
-# FIRST-PARTY
+# LOCAL
 import paths
 from conf import LENGTH, cmap
 

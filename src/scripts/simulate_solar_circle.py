@@ -13,9 +13,11 @@ from astropy.units import Quantity
 from galpy import potential
 from galpy.orbit import Orbit
 from numpy.random import Generator, default_rng
-from trackstream._typing import CoordinateType
 
 # FIRST-PARTY
+from trackstream._typing import CoordinateType
+
+# LOCAL
 import paths
 
 __author__ = "Nathaniel Starkman"

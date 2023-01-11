@@ -6,7 +6,7 @@
 # THIRD-PARTY
 from astroquery.vizier import Vizier
 
-# FIRST-PARTY
+# LOCAL
 import paths
 
 ##############################################################################

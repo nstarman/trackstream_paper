@@ -12,14 +12,20 @@ import pathlib
 import astropy.coordinates as coords
 import astropy.units as u
 import matplotlib.pyplot as plt
+import numpy as np
 from astropy.table import QTable
 from gala import coordinates as gc
+from matplotlib.collections import EllipseCollection
 from palettable.scientific.diverging import Roma_3
-from trackstream import Stream
-from trackstream.track.fit import FitterStreamArmTrack, Times
-from trackstream.track.width import UnitSphericalWidth, Widths
 
 # FIRST-PARTY
+from trackstream import Stream
+from trackstream.track.fit import FitterStreamArmTrack, Times
+from trackstream.track.fit.utils import _v2c
+from trackstream.track.utils import covariance_ellipse
+from trackstream.track.width import UnitSphericalWidth, Widths
+
+# LOCAL
 import paths
 from conf import LENGTH
 
@@ -78,48 +84,84 @@ _ = stream.fit_track(
 # ===================================================================
 # Plot
 
-fig, axes = plt.subplots(3, 1, figsize=(8, 8))
-axes.shape = (-1, 1)
+fig, axs = plt.subplots(3, 1, figsize=(8, 8))
+axs.shape = (-1, 1)
 full_name = stream["arm1"].full_name or ""
 
 # Plot stream in system frame
-axes[0, 0].scatter(full_data["phi1"], full_data["phi2"], s=1, c="k")
+axs[0, 0].scatter(full_data["phi1"], full_data["phi2"], s=1, c="k")
 
-in_frame_kw = {"c": "tab:blue", "label": full_name, "format_ax": True, "origin": True}
-stream["arm1"].plot.in_frame(frame="stream", kind="positions", ax=axes[0, 0], **in_frame_kw)
+arm1c = stream["arm1"].coords
+frame = arm1c.frame
+axs[0, 0].scatter(arm1c.phi1, arm1c.phi2, s=1, c="tab:blue", label=full_name, marker="*")
+
+# origin
+origin = stream["arm1"].origin.transform_to(frame)
+axs[0, 0].scatter(origin.phi1, origin.phi2, s=10, color="red", label="origin")
+axs[0, 0].scatter(origin.phi1, origin.phi2, s=800, facecolor="None", edgecolor="red")
 
 # -------------------------------------------------------------
 # SOM
 
-axes[1, 0].scatter(full_data["phi1"], full_data["phi2"], s=1, c="k")
-stream["arm1"].track.plot(
-    ax=axes[1, 0],
-    frame="stream",
-    kind="positions",
-    format_ax=True,
-    origin=True,
-    som=True,
-    som_kw=None,
-    kalman=False,
-    cmap=Roma_3.mpl_colormap,
+axs[1, 0].scatter(full_data["phi1"], full_data["phi2"], s=1, c="k")
+
+# origin
+axs[1, 0].scatter(origin.phi1, origin.phi2, s=10, color="red", label="origin")
+axs[1, 0].scatter(origin.phi1, origin.phi2, s=800, facecolor="None", edgecolor="red")
+# data
+axs[1, 0].scatter(
+    arm1c.phi1, arm1c.phi2, s=1, c=np.arange(len(arm1c)), label=full_name, marker="*", cmap=Roma_3.mpl_colormap
 )
+# som
+som1 = stream["arm1"].track.som
+ps1 = som1.prototypes.transform_to(frame)
+axs[1, 0].plot(ps1.phi1, ps1.phi2, c="k")
+axs[1, 0].scatter(ps1.phi1, ps1.phi2, marker="P", edgecolors="black", facecolor="none")
+
 
 # -------------------------------------------------------------
 # Kalman filter plot
 
-axes[2, 0].scatter(full_data["phi1"], full_data["phi2"], s=1, c="k")
-kalman_kw = {"std": 1, "alpha": 0.5, "c": "k"}
-stream["arm1"].track.plot(
-    ax=axes[2, 0],
-    frame="stream",
-    kind="positions",
-    origin=True,
-    format_ax=True,
-    som=False,
-    kalman=True,
-    kalman_kw=kalman_kw,
-    cmap=Roma_3.mpl_colormap,
+axs[2, 0].scatter(full_data["phi1"], full_data["phi2"], s=1, c="k")
+
+# origin
+axs[2, 0].scatter(origin.phi1, origin.phi2, s=10, color="red", label="origin")
+axs[2, 0].scatter(origin.phi1, origin.phi2, s=800, facecolor="None", edgecolor="red")
+# data
+axs[2, 0].scatter(
+    arm1c.phi1, arm1c.phi2, s=1, c=np.arange(len(arm1c)), label=full_name, marker="*", cmap=Roma_3.mpl_colormap
 )
+# kalman
+track = stream["arm1"].track
+path = track.path
+crd = _v2c(track.kalman, np.array(path._meta["smooth"].x[:, ::2]))
+Ps = path._meta["smooth"].P[:, 0:4:2, 0:4:2]
+
+x, y = crd.phi1, crd.phi2
+axs[2, 0].plot(x.value, y.value, label=f"track {track.name}", zorder=100, c="k")
+subsel = slice(None, None, 5)
+mean = np.array((x, y)).reshape((2, -1)).T[subsel]
+angle, wh = covariance_ellipse(Ps[subsel], nstd=1)
+width = 2 * np.atleast_1d(wh[..., 0])
+height = 2 * np.atleast_1d(wh[..., 1])
+ec = EllipseCollection(
+    width,
+    height,
+    angle.to_value(u.deg),
+    units="x",
+    offsets=np.atleast_2d(mean),
+    transOffset=axs[2, 0].transData,
+    facecolor="gray",
+    edgecolor="none",
+    alpha=0.5,
+    lw=2,
+    ls="solid",
+    zorder=0,
+)
+axs[2, 0].add_collection(ec)
+
+
+# -------------------------------------------------------------
 
 for ax in fig.axes:
     ax.set_xlabel(r"$\phi_1$ (GD1) [deg]", fontsize=15)

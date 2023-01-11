@@ -8,7 +8,7 @@ import astropy.units as u
 from astropy.coordinates import Angle
 from astroquery.vizier import Vizier
 
-# FIRST-PARTY
+# LOCAL
 import paths
 
 ##############################################################################

@@ -13,14 +13,16 @@ import warnings
 import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
+
+# FIRST-PARTY
 from trackstream.frame import fit_stream as fit_frame_to_stream
 from trackstream.track import FitterStreamArmTrack
 from trackstream.track.fit import Times
 from trackstream.track.width import AngularWidth, UnitSphericalWidth, Widths
 
-# FIRST-PARTY
+# LOCAL
 import paths
-from conf import LENGTH, cmap, cnorm, get_NGC5466_stream
+from conf import LENGTH, cmap, cnorm, get_NGC5466_stream, plot_kalman
 
 ##############################################################################
 # SCRIPT
@@ -66,21 +68,38 @@ fig = plt.figure(figsize=(8, 3))
 ax = fig.add_subplot(111)
 ax.grid(visible=True)
 
-track["arm1"].plot(
-    **{"cmap": cmap, "norm": cnorm, "c": np.linspace(0, -1, len(stream["arm1"].coords))},
-    som=False,
-    kalman=True,
-    kalman_kw={"connect": True, "std": 1, "subselect": 1, "c": "k"},
-    origin=False,
-    ax=ax,
+frame = stream.frame
+arm1c = stream["arm1"].coords
+arm2c = stream["arm2"].coords
+origin = stream["arm1"].origin.transform_to(frame)
+
+# arm 1
+ax.scatter(
+    arm1c.lon.wrap_at("180d"),
+    arm1c.lat,
+    label="arm 1",
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, -1, len(arm1c.lon)),
+    s=3,
 )
-track["arm2"].plot(
-    **{"cmap": cmap, "norm": cnorm, "c": np.linspace(0, 1, len(stream["arm2"].coords))},
-    som=False,
-    kalman=True,
-    kalman_kw={"connect": True, "std": 1, "subselect": 1, "c": "k"},
-    ax=ax,
+# origin
+ax.scatter(origin.lon.wrap_at("180d"), origin.lat, s=10, color="red", label="origin")
+ax.scatter(origin.lon.wrap_at("180d"), origin.lat, s=800, facecolor="None", edgecolor="red")
+# arm 2
+ax.scatter(
+    arm2c.lon.wrap_at("180d"),
+    arm2c.lat,
+    label="arm 2",
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, 1, len(arm2c.lon)),
+    s=3,
 )
+# kalman
+plot_kalman(ax, stream["arm1"], "positions", step=1, label="track arm 1")
+plot_kalman(ax, stream["arm2"], "positions", step=1, label="track arm 2")
+
 ax.legend()
 fig.tight_layout()
 

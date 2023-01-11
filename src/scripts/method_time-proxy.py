@@ -16,13 +16,15 @@ import numpy as np
 from matplotlib import cm
 from matplotlib.colors import Normalize
 from scipy.interpolate import interp1d
+
+# FIRST-PARTY
 from trackstream.frame import fit_stream
 from trackstream.track import FitterStreamArmTrack
 from trackstream.track.fit import Times
 from trackstream.track.fit.timesteps import make_timesteps
 from trackstream.track.width import UnitSphericalWidth, Widths
 
-# FIRST-PARTY
+# LOCAL
 import paths
 from conf import LENGTH, cmap, cnorm, get_NGC5466_stream
 

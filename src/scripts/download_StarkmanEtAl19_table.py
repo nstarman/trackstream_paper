@@ -6,7 +6,7 @@
 # THIRD-PARTY
 from astropy.table import QTable
 
-# FIRST-PARTY
+# LOCAL
 import paths
 
 ##############################################################################

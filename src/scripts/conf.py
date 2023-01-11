@@ -15,18 +15,25 @@ import numpy as np
 from astropy.table import QTable, vstack
 from astropy.units import Quantity
 from astropy.visualization import quantity_support
+from matplotlib.collections import EllipseCollection
 from matplotlib.colors import Normalize
 from palettable.scientific.diverging import Vik_15
 
-# FIRST PARTY
-from trackstream import Stream
-
 # FIRST-PARTY
+from trackstream import Stream
+from trackstream.track.fit.utils import _v2c
+from trackstream.track.utils import covariance_ellipse
+
+# LOCAL
 import paths
 
 if TYPE_CHECKING:
     # THIRD-PARTY
     from astropy.coordinates import SkyCoord
+    from matplotlib.axes import Axes
+
+    # FIRST-PARTY
+    from trackstream.stream import StreamArm
 
 
 ##############################################################################
@@ -229,3 +236,56 @@ def get_pal5_stream(subsample: int = 100) -> Stream:
     stream.mask_outliers(threshold=100, verbose=True)
 
     return stream
+
+
+###############################################################################
+
+
+def plot_kalman(
+    ax: Axes, arm: StreamArm, kind: Literal["positions", "kinematics"], step: int = 5, label: str = ""
+) -> None:
+    """Plot Kalman filter.
+
+    Parameters
+    ----------
+    ax : Axes
+        The axes to plot on.
+    arm : StreamArm
+        The arm to plot.
+    kind : {"positions", "kinematics}
+        Whether to plot positions or kinematics.
+    """
+    track = arm.track
+    path = track.path
+    crd = _v2c(track.kalman, np.array(path._meta["smooth"].x[:, ::2]))
+
+    if kind == "positions":
+        components = tuple(crd.get_representation_component_names().keys())
+        x, y = getattr(crd, components[0]), getattr(crd, components[1])
+        Ps = path._meta["smooth"].P[:, 0:4:2, 0:4:2]
+    else:
+        components = tuple(crd.get_representation_component_names("s").keys())
+        x, y = getattr(crd, components[0]), getattr(crd, components[1])
+        Ps = path._meta["smooth"].P[:, 4::2, 4::2]
+
+    ax.plot(x, y, zorder=100, c="k", label=label)
+    subsel = slice(None, None, step)
+    mean = np.array((x, y)).reshape((2, -1)).T[subsel]
+    angle, wh = covariance_ellipse(Ps[subsel], nstd=1)
+    width = 2 * np.atleast_1d(wh[..., 0])
+    height = 2 * np.atleast_1d(wh[..., 1])
+    ec = EllipseCollection(
+        width,
+        height,
+        angle.to_value(u.deg),
+        units="x",
+        offsets=np.atleast_2d(mean),
+        transOffset=ax.transData,
+        facecolor="gray",
+        edgecolor="none",
+        alpha=0.5,
+        lw=2,
+        ls="solid",
+        zorder=0,
+    )
+    ax.add_collection(ec)

@@ -16,7 +16,8 @@ import_heading_stdlib="STDLIB"
 import_heading_thirdparty="THIRD-PARTY"
 import_heading_firstparty="FIRST-PARTY"
 import_heading_localfolder="LOCAL"
-known_first_party = ["paths", "conf"]
+known_first_party = ["trackstream"]
+known_localfolder = ["paths", "conf"]
 
 [tool.ruff]
 line-length = 120

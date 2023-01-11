@@ -11,11 +11,13 @@ import warnings
 import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
+
+# FIRST-PARTY
 from trackstream.frame import fit_stream
 from trackstream.track import FitterStreamArmTrack
 from trackstream.track.width import UnitSphericalWidth, Widths
 
-# FIRST-PARTY
+# LOCAL
 import paths
 from conf import LENGTH, cmap, cnorm, get_NGC5466_stream
 

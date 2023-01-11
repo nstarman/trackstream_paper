@@ -18,7 +18,7 @@ from galpy.df import streamspraydf
 from galpy.orbit import Orbit
 from galpy.potential import MWPotential2014, Potential
 
-# FIRST-PARTY
+# LOCAL
 import paths
 from conf import RO, VO, GC_47TUC_Mass, get_from_Vasiliev2019_table
 
