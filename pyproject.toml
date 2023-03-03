@@ -14,6 +14,11 @@ import_heading_localfolder="LOCAL"
 known_first_party = ["trackstream"]
 known_localfolder = ["paths", "conf"]
 
+
+[tool.mypy]
+  python_version = "3.10"
+
+
 [tool.ruff]
 target-version = "py310"
 line-length = 120
@@ -23,6 +28,8 @@ ignore = [
     # pydocstyle (D)
     "D203",  # one-blank-line-before-class  # contra numpydoc
     "D213",  # multi-line-summary-second-line
+    "ERA001",
+    "PLR2004",
 ]
 
 [tool.ruff.per-file-ignores]

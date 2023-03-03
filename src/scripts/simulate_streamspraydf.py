@@ -1,5 +1,4 @@
-"""Download data from Vasiliev (2019) and save as an ECSV."""
-
+"""Simulate Stream-Spray Distribution Function."""
 
 import copy
 
@@ -11,10 +10,15 @@ import numpy as np
 import paths
 from astropy.table import QTable, vstack
 from astropy.units import Quantity
-from conf import RO, VO, GC_47TUC_Mass, get_from_vasiliev2019_table
+from conf import RO, VO, get_from_vasiliev2019_table
 from galpy.df import streamspraydf
 from galpy.orbit import Orbit
 from galpy.potential import MWPotential2014, Potential
+
+##############################################################################
+# PARAMETERS
+
+GC_47TUC_Mass = 7e5 * u.solMass  # Marks and Kroupa '10
 
 ##############################################################################
 # CODE
@@ -24,7 +28,7 @@ def streamspraydf_botharms(  # noqa: PLR0913
     progenitor_mass: Quantity,
     progenitor_sc: coords.SkyCoord,
     pot: Potential | list[Potential] = MWPotential2014,
-    tdisrupt: Quantity = u.Quantity(4.5, u.Gyr),
+    tdisrupt: Quantity = 4.5 * u.Gyr,
     meankvec: list[float] | tuple[float, ...] = (2.0, 0.0, 0.3, 0.0, 0.0, 0.0),
     sigkvec: list[float] | tuple[float, ...] = (0.4, 0.0, 0.4, 0.5, 0.5, 0.0),
 ) -> tuple[streamspraydf, streamspraydf, Orbit]:
@@ -39,7 +43,7 @@ def streamspraydf_botharms(  # noqa: PLR0913
     pot : Potential | list[Potential], optional
         The galpy potential, by default ``MWPotential2014``.
     tdisrupt : Quantity, optional
-        Time of disruption, by default ``u.Quantity(4.5, u.Gyr)``.
+        Time of disruption, by default ``4.5 * u.Gyr``.
     meankvec : list[float], optional
         Mean of k-vec, by default ``[2.0, 0.0, 0.3, 0.0, 0.0, 0.0]``.
     sigkvec : list[float], optional

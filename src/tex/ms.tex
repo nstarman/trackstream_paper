@@ -152,7 +152,7 @@ Ohio, USA\\
   interactions can be explored in this framework. However, particle spray
   methods are non-analytic and are also more computationally intensive than
   their analytic counterparts. The most expensive, but also most accurate and
-  detailed, stream modeling method is direct \nbody{} simulations, e.g. bespoke
+  detailed, stream modeling method is direct \nbodys{}, e.g. bespoke
   modeling of \stream{GD-1} to try to identify the progenitor \citep{Webb2019}.
   % Concluding sentence
   
@@ -198,11 +198,14 @@ Ohio, USA\\
   Tavangar2022}. This method allows for the path, width, and numerous other
   properties to be fit simultaneously. Though implemented in 2-D, the method is
   extensible to higher dimensions and so can be used, e.g. with full 3-D
-  measurements from \gaia{} or simulations. While powerful, this technique is
-  slow, requiring Monte Carlo methods to optimize the number and placement of
-  the spline nodes. Given its speed constraints, the method cannot be reasonably
-  used as a step in a larger Monte Carlo analysis, such as to derive stream
-  tracks for the generative stream models discussed previously.
+  measurements from \gaia{} or simulations. Another method, developed in
+  \citet{Nibauer2022}, uses a pipeline including an autoencoder neural network
+  to fit and parameterize the full mean track. Both methods produce excellent
+  descriptions of a stream track at the expense of compute time, for example the
+  spline method requiring optimization by Monte Carlo of the number and
+  placement of the spline nodes. Given the speed constraints, these methods
+  cannot be reasonably used as a step in a larger Monte Carlo analysis, such as
+  to derive stream tracks for the generative stream models discussed previously.
   
   In order to compare simulations to data as a step in a Monte Carlo analysis we
   require a fast method to derive stream tracks. Without the opportunity to
@@ -211,7 +214,7 @@ Ohio, USA\\
   on data with errors, constrained to be on-sky or in full 3-D, and with and
   without velocities. Furthermore, the same method should work on many different
   mock stream generation methods -- including analytic, particle sprays, and
-  \nbody{} simulations -- so that results derived with one simulation technique
+  \nbodys{} -- so that results derived with one simulation technique
   can be compared to the results from another. In this paper we present a novel
   method for accomplishing these goals: rapidly constructing stellar stream
   tracks, accounting for measurement error and data sparsity. The technique is
@@ -242,30 +245,30 @@ Ohio, USA\\
   simulated data, there are numerous options for ordering, such as the ejection
   time from the progenitor \citep{Gibbons2014} or in action-angle coordinates
   \citep{Bovy2014}. However real observations rarely, if ever, permit these
-  orderings. Instead we order using only configuration and kinematic phase-space
+  orderings. Instead we order using only position and velocity phase-space
   information.
 
   Consider the toy model of a static, spherical potential (for both the Galaxy
   and progenitor) where all test masses (stars) are ejected with the same
-  velocity. As the progenitor orbits the Galactic COM, its orbital path
-  describes an elliptical path in an orbital plane. The progenitor's tidal tails
-  (stream) will likewise lie near the progenitor's orbital plane. Observing from
-  the Galactic center, an orbital plane lies on a great circle in the observer's
-  `sky' and it is possible to re-orient the longitude ($\ell$) and latitude
-  ($b$) to a stream-oriented coordinate system ($\phi_1, \phi_2$) with the
-  progenitor at the origin and the stream along $\phi_1 (\phi_2 \approx 0)$.
-  However, our observations are not from the Galactic center, but approximately
-  8 kpc distant \citep[for recent measurements, see][]{GRAVITY2018, Leung2022}.
-  For an arbitrary stream lying (approximately) along a galactocentric ellipse
-  there is no guaranteed rotation to ``linearize'' the stream in the observer
-  coordinates so that the stream lies along $\phi_2 \approx 0$. Thankfully, many
-  streams are sufficiently distant from both the Galaxy and observer or oriented
-  such that a rotation a) exists, or b) applies to significant lengths of the
-  stream before deviations become problematic. When modeling streams and fitting
-  a track in the same representation as the data, for most streams transforming
-  to the stream-oriented coordinate system is a worthwhile first step to
-  ordering the data and is discussed in
-  \autoref{sub:great_circle_coordinate_frame}.
+  velocity. As the progenitor orbits the Galactic COM (center of mass), its
+  orbital path describes an elliptical path in an orbital plane. The
+  progenitor's tidal tails (stream) will likewise lie near the progenitor's
+  orbital plane. Observing from the Galactic center, an orbital plane lies on a
+  great circle in the observer's `sky' and it is possible to re-orient the
+  longitude ($\ell$) and latitude ($b$) to a stream-oriented coordinate system
+  ($\phi_1, \phi_2$) with the progenitor at the origin and the stream along
+  $\phi_1 (\phi_2 \approx 0)$. However, our observations are not from the
+  Galactic center, but approximately 8 kpc distant \citep[for recent
+  measurements, see][]{GRAVITY2018, Leung2022}. For an arbitrary stream lying
+  (approximately) along a galactocentric ellipse there is no guaranteed rotation
+  to ``linearize'' the stream in the observer coordinates so that the stream
+  lies along $\phi_2 \approx 0$. Thankfully, many streams are sufficiently
+  distant from both the Galaxy and observer or oriented such that a rotation a)
+  exists, or b) applies to significant lengths of the stream before deviations
+  become problematic. When modeling streams and fitting a track in the same
+  representation as the data, for most streams transforming to the
+  stream-oriented coordinate system is a worthwhile first step to ordering the
+  data and is discussed in \autoref{sub:great_circle_coordinate_frame}.
   
   The second step takes advantage of the low-dimensional structure of streams.
   Spatially, streams are approximately 1-dimensional curves in a 2-to-6
@@ -341,19 +344,20 @@ Ohio, USA\\
     \begin{figure}
       \script{method_frame-fit.py}
       \centering
-      \includegraphics[width=1\linewidth]{figures/method_frame-fit.pdf}
+      \hspace*{-10pt}
+      \includegraphics[width=1.1\linewidth]{figures/method_frame-fit.pdf}
       \caption{ Simulation of \stream{NGC 5466} \citep{El-Falou2022}.
         %
         [top] \stream{NGC 5466} in an ICRS reference frame.
         %
-        [middle] Residual of
+        [middle] \stream{NGC-5466} in the best-fit rotated reference frame, with
+        $\theta = 134.88^\circ$. The rotation angle has a $180^\circ$ degeneracy
+        and the selected angle depends on the starting point of the minimizer.
+        %
+        [bottom] Residual of
         $\frac{1}{N}\sum_{i=1}^{N}\left({\norm{\phi_2^{(i)}} - 0}\right)$, the
         longitude coordinate of \stream{NGC-5466} in a rotated reference frame,
-        with rotation angle $\theta$ and origin set in top panel.
-        %
-        [bottom] \stream{NGC-5466} in the best-fit rotated reference frame, with
-        $\theta = 167^\circ$. The rotation angle has a $180^\circ$ degeneracy
-        and the selected angle depends on the starting point of the minimizer. }
+        with rotation angle $\theta$ and origin set in top panel. }
       \label{fig:method_frame-fit}
     \end{figure}
     The stream-specific coordinate frame is the first step to ordering the data
@@ -376,19 +380,20 @@ Ohio, USA\\
     $\phi_1 \gtrsim 50^\circ$ projection effects will ruin the simple
     $\phi_1$-ordering approach. In general, streams cannot be ordered well by
     their longitude coordinate. We require a coordinate that better tracks the
-    structure of the stream. Looking at \autoref{fig:method_frame-fit}, finding
-    the on-track coordinate is somewhat analogous to deforming the $\phi_1$
-    dimension, wrapping it to meet the curvature of the stream. Another way of
-    understanding the transformation is to consider again a galactocentric great
-    circle. Intuitively we see that such an arc only projects to a line for an
-    observer on the plane of the great circle. For all other locations, only a
-    non-linear projection is guaranteed to map the curve to a line. In essence,
-    the non-linearity of the projection encodes the spatial components of the
-    galactocentric-to-observer reference frame transformation. We note, however,
-    that this approach cannot easily be reverse engineered to provide a novel
-    measure of the galactocentric frame parameters. Next we describe how we can
-    find a non-linear projection to recover the 1-D subspace of a stream and use
-    the on-stream coordinate to order the data.
+    structure of the stream. With reference to \autoref{fig:method_frame-fit},
+    finding the on-track coordinate is somewhat analogous to deforming the
+    $\phi_1$ dimension, wrapping it to meet the curvature of the stream. Another
+    way of understanding the transformation is to consider again a
+    galactocentric great circle. Intuitively we see that such an arc only
+    projects to a line for an observer on the plane of the great circle. For all
+    other locations, only a non-linear projection is guaranteed to map the curve
+    to a line. In essence, the non-linearity of the projection encodes the
+    spatial components of the galactocentric-to-observer reference frame
+    transformation. We note, however, that this approach cannot easily be
+    reverse engineered to provide a novel measure of the galactocentric frame
+    parameters. Next we describe how we can find a non-linear projection to
+    recover the 1-D subspace of a stream and use the on-stream coordinate to
+    order the data.
 
   % subsection great_circle_coordinate_frame (end)
 
@@ -397,11 +402,11 @@ Ohio, USA\\
     To determine a stream's 1-D subspace we use the simple neural network method
     of Self-Organizing Maps (SOMs). SOMs are primarily for low-dimensional,
     discrete representations of data. Using prototype vectors linked in a
-    lattice structure of a desired topology, SOMs approximate the data by
-    iteratively updating the prototypes to approximate the data distribution. In
-    final form, each prototype maps nearby high-dimensional data to a
-    lower-dimensional lattice. For a detailed discussion we refer the reader to
-    \cite{DataScience}.
+    lower-dimensional lattice, SOMs approximate the data by iteratively updating
+    the prototypes to approximate the data distribution. In final form, each
+    prototype maps nearby high-dimensional data to a lower-dimensional space
+    described by the prototypes' lattice. For a detailed discussion we refer the
+    reader to \cite{DataScience}.
 
 
     \subsubsection{The Algorithm, in 1-D.} \label{ssub:som_math_overview}
@@ -413,37 +418,39 @@ Ohio, USA\\
       defer that for future work.
 
       The data consists of $N$ tracers measured at positions $\mbf{w}^{(n)}$ in
-      the $D$-dimensional phase-space. In simulations, streams are generally
-      best represented in galactocentric Cartesian coordinates, but observations
-      are taken in spherical coordinates: two angular positions, possibly a
-      radial distance, and corresponding kinematics. An important part of the
-      SOM is the data-space distance metric, which is a complication when
-      working in Cartesian coordinates versus on the surface of a sphere. For
-      spherical coordinates the correct distance metric is the
+      the $D$-dimensional phase-space, with a distance metric relating together
+      any two tracers. In simulations, streams are generally best represented in
+      galactocentric (GXYC) Cartesian coordinates, with a simple Euclidean
+      metric. However observations of stars are taken in spherical coordinates:
+      two angular positions, possibly a radial distance, and corresponding
+      kinematics. For spherical coordinates the correct distance metric is the
       \citet{Vincenty1975} formula; this is used in \trackstream{} and the
-      figures in this paper. For many streams the angular separation between
-      tracers is small, so it is reasonable to work within a flat sky
-      approximation and simplify to a Euclidean distance metric in Cartesian
-      coordinates. Therefore, for simplicity here we only discuss the method in
-      Cartesian coordinates.
+      figures in this paper, where relevant. For many streams the angular
+      separation between tracers is small, so it is reasonable to work within a
+      flat sky approximation and simplify to a Euclidean distance metric in
+      Cartesian coordinates. Therefore, for simplicity here we only discuss the
+      method in Cartesian coordinates and refer the reader to \trackstream{},
+      where both metrics are implemented.
 
-      The SOM will learn the structure of the data using a smaller number $K$ of
-      ``prototype'' vectors $\mbf{p}^{(k) \in [1, K]}$ in the same space as the
-      data. The need for only a few prototype vectors is analogous to how only
-      two points are required to describe a line, no matter how many data points
-      are sampled from the line. The relationship between the $\mbf{p}_{k}$
-      prototype vectors determines the topology and ordering of the data
-      $\mbf{w}^{(n)}$. Returning to the line example, the relationship between
-      the two line points is a linear segment, so when fit to a dataset drawn
-      from a line distribution, the SOM should describe the data well. 
+      The SOM will learn the structure of the data using a smaller number $K <
+      N$ of ``prototype'' vectors $\mbf{p}^{(k)}$ in the same space as the data.
+      The need for only a few prototype vectors is analogous to how only two
+      points are required to describe a line, no matter how many data points are
+      sampled from the line. The relationship between the $\mbf{p}_{k}$
+      prototype vectors determines the lower-dimensional space and ordering of
+      the data $\mbf{w}^{(n)}$. Returning to the line example, the relationship
+      between the two line points is a linear segment, so when fit to a dataset
+      drawn from a line distribution, the SOM should describe the data well.
 
       Generically the prototypes' relationships are described with a feature map
       $\mbf{Q}$, where each prototype $\mbf{p}^{(k)}$ has a corresponding
       lattice node $\mbf{q}_k$. However, since streams are one-dimensional the
       only pertinent information is the index: $\mbf{q}_k \equiv k$. $\mbf{Q}$
-      encodes that prototypes $\mbf{p}^{(i)}$, $\mbf{p}^{(j)}$ are neighbors if
-      and only if the corresponding lattice points $\mbf{q}_i$, $\mbf{q}_j$ are
-      neighbors -- i.e. $|i-j| = 1$.
+      reduces to just an ordered set of indices, encoding that prototypes
+      $\mbf{p}^{(i)}$, $\mbf{p}^{(j)}$ are neighbors if and only if the
+      corresponding lattice points $\mbf{q}_i$, $\mbf{q}_j$ are neighbors --
+      i.e. $|i-j| = 1$. Therefore the lattice space is one-dimensional, with no
+      loops or other non-trivial features.
 
       With this review of feature and lattice space we are ready for the SOM
       algorithm:
@@ -461,15 +468,19 @@ Ohio, USA\\
             \item Select the next datum $\mbf{w}^{(n)}$.
             \item Update the data-space position of the nearest prototype,
             keeping the lattice unchanged.
-            \item Similarly update all the prototypes' topological (lattice)
-            neighbors, making smaller updates for more distant prototypes.
+            \item Similarly update all the prototypes' lattice neighbors, making
+            smaller updates for more distant prototypes.
           \end{enumerate}
       \end{enumerate}
 
       By multiple iterations the prototypes will be updated to lie near the data
       in position space and capture the structure of the data in lattice space.
-      For a more mathematically detailed explanation see Appendix
-      \ref{app:som_math} and \trackstream{} for a code implementation.
+      In essence, in 1D the SOM algorithm moves around a string of beads --
+      beads that can lie anywhere and be close or far from their neighbors, but
+      cannot be reordered on their string. For a more mathematically detailed
+      explanation see Appendix \ref{app:som_math} and \trackstream{} for a code
+      implementation.
+      
 
     % subsubsection the_math (end)
 
@@ -477,18 +488,20 @@ Ohio, USA\\
 
       After applying the SOM and deriving the set of prototype vectors, the next
       step is to project the data into the 1-D space and order the data in a
-      manner consistent with the topology. There are numerous projection
+      manner consistent with the lattice. There are numerous projection
       algorithms, such as U-matrix maps \citep{Ultsch1990}, that are intended
       for clustering data by the lattice-point distance. The $\mbf{Q}$ is not of
-      interest; we want to project on the real-space structure of the SOM, and
-      so implement a custom algorithm to connect and project onto the SOM
+      interest; we want to project on the 1-D lattice of the SOM, and so
+      implement a custom algorithm to connect and project onto the SOM
       prototypes. While it is tempting to connect the SOM prototypes with a
       smooth curve, e.g. a Bezier curve \citep{Bezier1982} or 3rd order
       piece-wise polynomial spline, not only is projection onto a curve
-      challenging, it is not correct for an SOM with a linear lattice. The SOM
-      topology is a linear structure and the SOM prototypes are connected by
-      line segments. Projecting each datum reduces to the task of 1) identifying
-      the correct line segment and 2) projecting onto that segment.
+      challenging, it is not correct for this SOM. The SOM has a linear
+      structure and the SOM prototypes are connected by line segments when
+      calculating their relative distances. Therefore, projecting each datum
+      onto the SOM reduces to the task of 1) identifying the correct line
+      segment and 2) projecting onto that segment. We do this projection
+      separately for the positions and velocities.
 
       The custom algorithm, with examples drawn from
       \autoref{fig:som_index_algorithm}, is as follows:
@@ -497,11 +510,10 @@ Ohio, USA\\
         \item Get the ordered lattice points (black) from the SOM. The first
         point is the nearest to the specified origin (e.g. the stream
         progenitor, see \autoref{sub:great_circle_coordinate_frame} for details)
-        and subsequent points draw their ordering from the topology.
-        \item Compute the directed real-space segments from one lattice point to
-        the next.
-        \item For each data point, compute the real-space projection onto each
-        segment
+        and subsequent points draw their ordering from the SOM.
+        \item Compute, from the first to last point, the segments (and segment
+        directions) between the prototypes.
+        \item For each data point, compute the projection onto each segment
             \begin{align}
               \mbf{r} &= \mbf{p}^{(k)} + \ t \cdot (\mbf{p}^{(k+1)} - \mbf{p}^{(k)}),
               \\
@@ -510,7 +522,7 @@ Ohio, USA\\
             for data point $\mbf{w}^{(n)}$, and lattice points $\mbf{q}_k$.
             Projections between the two lattice points have $0<t<1$.
         \item For each data point, compare the distance to each node and to each
-        projection to find which node / segment it should be associated with.
+        projection to find which node / segment it should be associated with:
           \begin{enumerate}[label={(\bfseries \arabic*):}, leftmargin=*]
           \itemsep0.5em
               \item data with $t=0,1$ are closest to a node.
@@ -520,8 +532,8 @@ Ohio, USA\\
               distance. E.g., data point (green) $d_3$ is closer to projected
               point $e_1$ than to $e_2$ and therefore belongs in the $q_1$-$q_2$
               segment.
-              \item data with $t < 0$ or $1 < t$ and that are closest to a
-              lattice terminal node are within the ``end-caps'', e.g, $d_1$.
+              \item data with $t < 0$ or $1 < t$ and that are closest to an
+              end-node of the lattice are within the ``end-caps'', e.g, $d_1$.
               \item data with $t < 0$ or $1 < t$ and not in an end-cap are in a
               convexity, e.g, $d_5$.
           \end{enumerate}
@@ -535,7 +547,7 @@ Ohio, USA\\
               sweeping from one segment to the next. This is why $d_8$ precedes
               $d_9$ in \autoref{fig:som_index_algorithm}.
           \end{enumerate}
-        \item Order the blocks by the lattice node ordering.
+        \item Order the blocks by order of the lattice nodes.
       \end{enumerate}
 
       \begin{figure*}
@@ -576,25 +588,51 @@ Ohio, USA\\
       binning. Unlike the \stream{NGC 5466} simulation (see
       \autoref{fig:method_frame-fit}), the binning produces a poor match to the
       data. However, after $10^5$ iterations (at $\sim\!18,000$
-      iterations/second on a 2018 2.7GHz i7 MacBook Pro) the SOM fits well and
-      orders the data well. Note that most of the trained SOM prototypes do not
-      lie directly on the mock stream. For a tight curve like this one, the
-      offset is expected: points near to a prototype $p_k$ influence its
-      location, so prototypes are generally interior to a convexity as that is
-      locally the best average position.
+      iterations/second on a 2018 2.7GHz i7 MacBook Pro, when using the
+      Cartesian distance metric) the SOM fits well and orders the data well.
+      Note that most of the trained SOM prototypes do not lie directly on the
+      mock stream. For a tight curve like this one, the offset is expected:
+      points near to a prototype $p_k$ influence its location, so prototypes are
+      generally interior to a convexity as that is locally the best average
+      position. We will see in later sections that these offsets of the SOM from
+      the data are typical and do not negatively impact the stream track fit. In
+      \autoref{fig:method_som-fit_solar-circle} specifically, and often
+      generally, the offsets of the prototypes can be decreased by increasing
+      the number of SOM prototypes used to fit the stream. More prototypes means
+      each prototype is sensitive to a smaller local volume and consequently
+      less offset from the points in that volume. In the extreme limit of $K
+      \rightarrow N$, the SOM can match the data one-to-one -- a classic example
+      of over-fitting. Conversely, if the structure of the stream is simple, as
+      is the case in \autoref{fig:method_som-fit_solar-circle}, only a single
+      prototype is technically required: placing a single prototype at the
+      coordinate origin and projecting with \autoref{sub:som_projection}, the
+      angular sweep step will order the data equivalently to the 25 prototypes
+      used in the figure. Clearly, $K=1$ does not generalize well. How should
+      $K$ be chosen? The optimal $K$ is a balance between the desired
+      sensitivity to small-scale structure versus the increased time and
+      computational cost to train a larger SOM. In this work the SOM is used
+      only to order the data, thus sensitivity to small-scale structure is less
+      important than fast training. We find results in the paper to be very
+      insensitive to the exact choice of $K$, providing $K$ and the number of
+      SOM training iterations are both reasonable. In all tested cases we find
+      $K \gtrsim 10$ (per arm) (alternativevly, at least one prototype per 10
+      degrees on sky) to be both performant and provide excellent fits to the
+      data.
 
       \begin{figure}
         \script{method_som-fit_solar-circle.py}
         \centering
         \includegraphics[width=1\linewidth]{figures/method_som-fit_solar-circle.pdf}
         \caption{
-          \emph{The SOM-derived ordering of a mock stream.}
-          The left shows a z-projection of the stream, with stars "observed" in
-          a random sequence. The initial position of the SOM prototypes (gray)
-          do not match the data. The right figure is the same but with the
-          trained SOM-derived ordering. The trained SOM prototypes are included
-          (black circles), showing how SOMs require only a relatively small
-          number of prototypes to capture the structure of the data. }
+          %
+          \emph{The SOM-derived ordering of a mock stream in Galactocentric (GXYC) coordinates.}
+          %
+          The left shows a z-projection of the stream, with stars ``observed" in
+          a random sequence. The initial position of the SOM prototypes (gray,
+          dash-line-connected circles) do not match the data. The right figure
+          is the same but with the trained SOM-derived ordering. The trained SOM
+          prototypes are included, showing how SOMs require only a relatively
+          small number of prototypes to capture the structure of the data. }
         \label{fig:method_som-fit_solar-circle}
       \end{figure}
 
@@ -602,30 +640,34 @@ Ohio, USA\\
         \script{method_som-fit.py}
         \centering
         \includegraphics[width=1\linewidth]{figures/method_som-fit.pdf}
-        \caption{ \emph{Simulation of \stream{NGC-5466} ordered by SOM.} The
-          \stream{NGC-5466} simulation is the same as
+        \caption{
+          %
+          \emph{Simulation of \stream{NGC-5466} ordered by SOM.}
+          %
+          The \stream{NGC-5466} simulation is the same as
           \autoref{fig:method_frame-fit}. The best-fit frame is determined by
           the method described in \autoref{sub:great_circle_coordinate_frame}
           (and shown in \autoref{fig:method_frame-fit}). The SOM has 10
           prototypes (per arm), initialized by equi-frequency binnning of the
-          $\phi_1$ data (shown in the top histogram) and trained for $10^4$
+          $\phi_1$ data (shown in the top histogram) and trained for $10^3$
           iterations before being used to order the data. The trained prototypes
-          are shown offset from their actual location. In regions of very high
-          density the prototypes lie on the stream, while in low density regions
-          they do not. This is a consequence of local averaging and shows the
-          SOM is correctly responding to the structure of the data. The SOM is
-          used to order the data using the process described in
+          (gray dashed-line-connected circles) are shown with connected arrows
+          indicating direction. In regions of very high density the prototypes
+          lie on the stream, while in low density regions they do not. This is a
+          consequence of local averaging with data clipped after the SOM is run,
+          and shows the SOM is responding to the structure of the data. The SOM
+          is used to order the data using the process described in
           \autoref{sub:som_projection}. }
         \label{fig:method_som-fit}
       \end{figure}
 
       \autoref{fig:method_som-fit} shows the SOM-derived order for a simpler
       example, the mock \stream{NGC-5466} stream also shown in previous figures.
-      Two SOMs are used, one for each stream arm. Each SOM is trained for 10,000
-      iterations ($\sim0.5$ second on a 2018 2.7GHz i7 MacBook Pro). The
-      prototypes cluster more densely where the data are dense, such as in the
-      right-hand arm, but still provide good coverage of the whole stream. Shown
-      by the colormap, the SOM order is good, with stars near in position
+      Two SOMs are used, one for each stream arm. Each SOM is trained for only
+      1,000 iterations ($\lesssim0.1$ seconds on a 2018 2.7GHz i7 MacBook Pro).
+      The prototypes cluster more densely where the data are dense, such as in
+      the right-hand arm, but still provide good coverage of the whole stream.
+      Shown by the colormap, the SOM order is good, with stars near in position
       likewise near in the ordering. For this stream the SOM is not strictly
       required as the position angle $\phi_1$ is sufficient to order the data.
       The SOM can be initialized with random prototypes and a connecting
@@ -633,7 +675,7 @@ Ohio, USA\\
       typically converge to the same solution, but the former will require many
       more iterations than the latter. Rather than skipping the SOM step, we
       instead use an informed initial condition\footnotemark and reduce the
-      training iterations, e.g. only the 10,000 used here. For
+      training iterations, e.g. only the $10^3$ used here. For
       \autoref{fig:method_som-fit} the SOM prototypes are initialized by
       equi-frequency binning in $\phi_1$.
 
@@ -643,7 +685,8 @@ Ohio, USA\\
       $n$ is the number of data divided by the number of prototypes.
       Equi-frequency binning equitably spreads the prototypes over the data, if
       the data is one-to-many in $\phi_1$. If the data is many-to-one in
-      $\phi_1$, for example with phase-wrappings, the binning is poor.}
+      $\phi_1$, for example with phase-wrappings or in
+      \autoref{fig:method_som-fit_solar-circle}, the binning is poor.}
     
       Were \stream{NGC-5466} simulated again in a slightly perturbed potential
       or with similar initial conditions, the stream would be generally similar.
@@ -702,23 +745,24 @@ Ohio, USA\\
 
     To achieve a general solution the data cannot be fit one coordinate against
     another; much better is to have an affine variable and instead fit
-    parametrically for each coordinate. For a stream, this affine parameter can
-    be the arc-length, i.e. the angular distance along the mean path of the
-    stream. The point-to-point distances of the data projected onto the SOM's
-    subspace are very nearly this arc-length. With the arc-length as the affine
-    parameter one might do a Gaussian process regression \citep{Cervone2015} or
-    fit any manner of function: low-order polynomial, B-spline, Bezier curve.
-    However, all these procedures are susceptible to the same problem, the SOM
-    is an unsupervised machine learning technique and is not guaranteed to
-    converge. In particular, if trained quickly it can make small mistakes in
-    the ordering. In principle this shortcoming can be overcome by more training
-    iterations, but if time is a constraint, this extra step may not be
-    practical and may require human supervision to confirm an optimal fit, which
-    is likewise impractical. Therefore, a general fitting procedure for stream
-    data should on the one hand use the SOM-derived data ordering as an
-    approximate affine variable, but also be insensitive to small inaccuracies
-    in that ordering. A fitting method that meets both these requirements is the
-    Kalman filter, presented here.
+    parametrically for each coordinate. For a stream, this affine parameter
+    might be the arc-length, i.e. the angular distance along the mean path of
+    the stream. The point-to-point distances of the data projected onto the
+    SOM's subspace are very nearly this arc-length and are hereafter referred to
+    interchangeably. With the arc-length as the affine parameter one might do a
+    Gaussian process regression \citep{Cervone2015} or fit any manner of
+    function: low-order polynomial, B-spline, Bezier curve. However, all these
+    procedures are susceptible to the same problem, the SOM is an unsupervised
+    machine learning technique and is not guaranteed to converge. In particular,
+    if trained quickly it can make small mistakes in the ordering. In principle
+    this shortcoming can be overcome by more training iterations, but if time is
+    a constraint, this extra step may not be practical and may require human
+    supervision to confirm an optimal fit, which is likewise impractical.
+    Therefore, a general fitting procedure for stream data should on the one
+    hand use the SOM-derived data ordering as an approximate affine variable,
+    but also be insensitive to small inaccuracies in that ordering. A fitting
+    method that meets both these requirements is the Kalman filter, presented
+    here.
 
   % paragraph: shortcomings_of_alternatives (end)
 
@@ -1032,8 +1076,11 @@ Ohio, USA\\
       \script{method_kalman-filter.py}
       \centering
       \includegraphics[width=1.0\linewidth]{figures/method_kalman-filter.pdf}
-      \caption{ \emph{The Kalman-predicted path for \stream{NGC-5466}}. Building
-        on figures
+      \caption{
+        %
+        \emph{The Kalman-predicted path for \stream{NGC-5466}}.
+        %
+        Building on figures
         \ref{fig:method_frame-fit},\ref{fig:method_som-fit},\ref{fig:method_time-proxy},
         this figure shows the application of the Kalman filter to each arm of
         the simulated \stream{NGC-5466}. The ordering of the data in each arm
@@ -1079,8 +1126,8 @@ Ohio, USA\\
     0.365 km / s, to create a reasonably thin stream. The system is integrated
     in \galpyMWPotential{} with an
     \galpyapidoc{reference/aaisochroneapprox}{actionAngleIsochroneApprox} to map
-    phase space coordinates to the action-angle coordinates required by the
-    mock-stream generator \citep{Bovy2015}.
+    galactocentric (GXYC) phase space coordinates to the action-angle
+    coordinates required by the mock-stream generator \citep{Bovy2015}.
 
     In contrast the \trackstream{} pipeline estimates the track from stream
     sample points (e.g. stars) in position-momentum phase space. To compare
@@ -1104,16 +1151,23 @@ Ohio, USA\\
     \trackstream{} and the DF converge, such as near the progenitor in
     \autoref{fig:results_streamdf}.
 
+    The Kalman path fits smoothly to the data, unlike the SOM prototypes
+    (\autoref{fig:results_streamdf}, middle panels) which can be offset from the
+    stream. This demonstrates two key points: first, that the path of Kalman
+    filter is determined by the data, not the SOM, which is used only for
+    ordering the data; and second that the SOM can well order the data even when
+    offset from it.
+
     \begin{figure*}
       \script{results_streamdf.py}
       \centering
       \includegraphics[width=0.9\linewidth]{figures/results_streamdf.pdf}
       \caption{ 
         %
-        \emph{Comparing results of \galpystreamdf{}} \citep{Bovy2014} to
+        \emph{Comparing results of} \galpystreamdf{} \citep{Bovy2014} \emph{to}
         \trackstream{}. The stream progenitor parameters are \stream{NGC 104}
         from \citet{Vasiliev2019}, integrated in \galpyMWPotential{}
-        \citep{Bovy2015}, with \galpystreamdf{} from \citet{Bovy2014}.
+        \citep{Bovy2015}, with \galpystreamdf{} from \citet{Bovy2014} .
         %
         [top left/right] x-y and $v_x$-$v_y$ projections of the simulated
         stream's arms and progenitor. The data are not yet ordered, beyond
@@ -1123,9 +1177,9 @@ Ohio, USA\\
         (\autoref{sub:self_organizing_maps}) run on the positions and kinematics
         of each stream-arm. The trained SOM prototypes are black pluses.
         %
-        [bottom left/right] The \trackstream{} tracks (orange and blue, with
-        gray error ellipses) are compared to the \galpystreamdf's true tracks
-        (dashed line), also the source of the 400 star sample on which the
+        [bottom left/right] The \trackstream{} tracks (black, with gray error
+        ellipses) are compared to the \galpystreamdf's true tracks (dashed
+        line), also the source of the 400 star sample on which the
         \trackstream{} was trained. The error ellipses, shown at each step of
         the Kalman filter, are smoothly interpolable as a function of the
         arc-length. For visualization of the covariances we exaggerate the
@@ -1208,35 +1262,35 @@ Ohio, USA\\
       \includegraphics[width=0.9\linewidth]{figures/results_streamspray.pdf}
       \caption{
         %
-        \emph{Full application of \trackstream{} to a particle-spray model of
-        \stream{NGC 104}.} The mock stream progenitor parameters are \stream{NGC
-        104} from \citet{Vasiliev2019}, integrated in \galpyMWPotential{}, with
-        \galpystreamspraydf{} from \citep{Bovy2014}.
+        \emph{Full application of} \trackstream{} \emph{to a particle-spray
+        model of a 47 Tucana-like progenitor.} The mock stream progenitor
+        parameters are from \citet{Vasiliev2019}, integrated in
+        \galpyMWPotential{}, with \galpystreamspraydf{} from \citet{Bovy2014}.
         %
         [top left/right] x-y and $v_x$-$v_y$ projections of the simulated
         stream's arms and progenitor. The data are not yet ordered, beyond
         identifying to which stream arm each tail belongs.
         %
         [middle left/right] The stream is ordered (and colored) by the SOM
-        \autoref{sub:self_organizing_maps} run on the positions of each arm. The
-        trained SOM prototypes are black, connected pluses.
+        (\autoref{sub:self_organizing_maps}) run on the positions of each arm.
+        The trained SOM prototypes are black, connected pluses.
         %
         [bottom left/right] The \trackstream{} track is compared to
         \galpystreamspraydf{} track, the source of of the 400 star sample on
         which the \trackstream{} was trained. For visualization of the
-        covariances we exaggerate the intrinsic stream width to 300 pc.See
+        covariances we exaggerate the intrinsic stream width to 300 pc. See
         \autoref{sub:tracking_particle_spray_mock_streams} for discussion. }
       \label{fig:results_streamspray}
     \end{figure*}
 
   % subsection tracking_particle_spray_mock_streams (end)
 
-  \subsection{Tracking an \nbody{} model}
+  \subsection[Tracking an N-body model]{Tracking an $N$-body model}
   \label{sub:tracking_an_n_body_model}
 
     \nbodys{} are the most accurate but also computationally expensive of the
     stream simulation methods, making the fewest time-saving approximations. A
-    high resolution \nbody{} simulation may achieve one-to-one parity in the
+    high resolution \nbody{} may achieve one-to-one parity in the
     number of particles to number of stars in the progenitor, model the motions
     with dynamic time steps to resolve close interactions, and include stellar
     evolution. The disruption rate is determined by the the Galactic tidal field
@@ -1244,7 +1298,7 @@ Ohio, USA\\
     Often the high resolution of the progenitor is not matched in the potential,
     where it is common to instead use a purely analytic model or to also include
     low(er) resolution sub-halos. When trying to match observational data, an
-    \nbody{} simulation provides the most accurate representation.
+    \nbody{} provides the most accurate representation.
 
     \autoref{fig:results_nbody} shows \trackstream{} applied to an \nbody{} of
     \stream{Palomar 5}. The \nbody{} is taken from \citet{Starkman2019}, where
@@ -1264,7 +1318,7 @@ Ohio, USA\\
 
     The progenitor particles are removed as these are not part of the stream.
     Likewise we remove the neutron stars and other stellar remnants. The full
-    \nbody{} simulation includes a number of particles that were ejected from
+    \nbody{} includes a number of particles that were ejected from
     the progenitor, e.g. in a close core interaction, that are not part of the
     stream. These non-stream members are identified by a Local Outlier Factor
     (LOF) calculation \citep{Breunig2000} with a threshold of $1.0$ and removed.
@@ -1310,23 +1364,22 @@ Ohio, USA\\
       \includegraphics[width=0.9\linewidth]{figures/results_nbody.pdf}
       \caption{
         %
-        \emph{Full application of \trackstream{} to an \nbody{} simulation of
-        \stream{Palomar 5}.} The mock stream progenitor parameters are for
-        \stream{Palomar 5}, integrated in \galpyMWPotential.
+        \emph{Full application of} \trackstream{} \emph{to an \nbody{}
+        of \stream{Palomar 5}.} The mock stream progenitor parameters
+        are for \stream{Palomar 5}, integrated in \galpyMWPotential.
         %
         [top left/right] x-y and $v_x$-$v_y$ projections of the simulated
         stream's arms and progenitor. The data are not yet ordered, beyond
         identifying to which stream arm each tail belongs.
         %
         [middle left/right] The stream is ordered by the SOM
-        \autoref{sub:self_organizing_maps} run on the positions of each arm. The
-        trained SOM prototypes are black, connected pluses.
+        (\autoref{sub:self_organizing_maps}) run on the positions of each arm.
+        The trained SOM prototypes are black, connected pluses.
         %
         [bottom left/right] The \trackstream{} track is compared to the
         \nbody{}, the data on which the \trackstream{} was trained. For
         visualization of the covariances we exaggerate the intrinsic stream
-        width to 300 pc. See
-        \autoref{sub:comparing_to_distribution_function_df_models} for details.
+        width to 300 pc. See \autoref{sub:tracking_an_n_body_model} for details.
         }
       \label{fig:results_nbody}
     \end{figure*}
@@ -1366,9 +1419,9 @@ Ohio, USA\\
       \includegraphics[width=0.9\linewidth]{figures/results_Pal5_real.pdf}
       \caption{\label{fig:results_Pal5_real}
         %
-        \textit{Full application of \trackstream{} to real data on the
-        \stream{Palomar 5} stream from \citet{Ibata2017}
-        and mean track points from \citet{Starkman2019}}.
+        \emph{Full application of} \trackstream{} \emph{to real data on the
+        \stream{Palomar 5} stream from \citet{Ibata2017} and mean track points
+        from \citet{Starkman2019}}.
         %
         [top] The stream stream is shown in ICRS (observed) coordinates. The
         position of the origin is from \citet{Vasiliev2019}. We hand-label and
@@ -1376,11 +1429,10 @@ Ohio, USA\\
         %
         [top middle] A best-oriented frame is fit to the data, minimizing $b$.
         %
-        [bottom middle] An SOM (black connected dots) is fit to each arm. 
+        [bottom middle] An SOM (gray connected circles) is fit to each arm. 
         %
-        [bottom] The Kalman filter is run on each arm (blue and orange), using
-        the SOM ordering.
-    }
+        [bottom] The Kalman filter (black line) is run on each arm , using the
+        SOM ordering. }
     \end{figure}
 
     \begin{figure}
@@ -1389,18 +1441,19 @@ Ohio, USA\\
       \includegraphics[width=0.9\linewidth]{figures/results_GD1_real.pdf}
       \caption{
         %
-        \textit{\trackstream{} fit to a subset of the \stream{GD-1} data from
-        \citet{Price-Whelan2018}}.
+        \trackstream{} \emph{fit to a sub-selection (blue points) of the full
+        \stream{GD-1} dataset from \citet{Price-Whelan2018}} (blue and black
+        points).
         %
         [top] The data transformed to the frame from \citet{Koposov2010}. The
         thin stream is hand-selected in TOPCAT \citep{Taylor2005} to match the
         selection field of \citet[][figure 2]{Price-Whelan2018}.
         %
-        [middle] The same, but now including the SOM prototypes (black connected
-        points) and coloring the data by the SOM ordering.
+        [middle] The same, but now including the SOM prototypes (gray connected
+        circles) and coloring the data by the SOM ordering.
         %
-        [bottom] The fit track to the stream (black) overlaid on the SOM-colored
-      data. }
+        [bottom] The fit track to the stream (black line) overlaid on the
+      SOM-colored data. }
       \label{fig:results_GD1_real}
     \end{figure}
   
@@ -1480,13 +1533,14 @@ Ohio, USA\\
     a less smooth track, but covariance ellipses will likewise be large and the
     model likelihood will be low. For the SOM, using the initial prototypes also
     means having a long training time at every step. We emphasize that ``long''
-    is of order 10 seconds for $10^5$ iterations on a consumer laptop, but this
+    is of order 5-15 seconds for $10^5$ iterations on a consumer laptop
+    (depending whether the distance metric is Cartesian vs spherical), but this
     may still be a prohibitive time constraint. Steps in the MCMC are to nearby
     points in the parameter space of a potential and progenitor and the
     generated mock stream will generally be similar to the previous stream. For
     subsequent steps, the previous SOM may be used as an informed starting point
-    and should require only a little tuning, not wholesale retraining, and most
-    importantly, no human supervision.
+    and should require only a little tuning ($\lesssim 1$ second), not wholesale
+    retraining, and most importantly, no human supervision.
 
     For reference we compare the training time of a SOM to the DF method
     \citep{Bovy2014}, which is the fastest of the simulation methods described
@@ -1494,26 +1548,26 @@ Ohio, USA\\
     simple logarithmic potential both arms of a stream with a \stream{NGC
     5466}-like progenitor may be simulated in approximately 20 seconds on a 2018
     2.7GHz i7 MacBook Pro, while a similar progenitor evolved in
-    \galpyMWPotential{} takes approximately $2\frac{1}{2}$ minutes. Training the
-    Self-Organizing Map for 2 million iterations takes approximately 20 seconds
-    (ten per arm) on either stream. For well chosen initial prototype locations
-    the number of iterations may be reduced arbitrarily, but running for at
-    least a few tens of thousands of iterations can be good practice to ensure
-    convergence.
+    \galpyMWPotential{} takes approximately $2\frac{1}{2}$ minutes. In contrast,
+    training a Self-Organizing Map for $10^5$ iterations takes between 6 to 20
+    seconds, depending on the distance metric. For well chosen initial prototype
+    locations the number of iterations may be reduced arbitrarily, but running
+    for at least a few tens of thousands of iterations can be good practice to
+    ensure convergence.
 
     The stream is re-simulated with a modified \galpyMWPotential, where the mass
     of the bulge and disc are both increased by 30\% -- a very large difference
     and one that significantly affects the stream morphology, with a very
-    obvious kink in the z projection. Retraining from scratch would take a few
-    million iterations and tens of seconds. However, the SOM prototypes trained
-    on the stream simulated with \galpyMWPotential{} are proximate in
-    phase-space and already have the correct topological arrangement. Using
-    these prototypes as an informed initial condition, the requisite training
-    time to convergence is reduced to a few tens of thousands of iterations and
-    less than one second per arm. The SOM is only a time-limiting step of the
-    \trackstream{} pipeline once. The Kalman filter is never a time-limiting
-    step, taking only a few milliseconds to run. Thereafter, the entire pipeline
-    is significantly faster than the stream's generative model.
+    obvious kink in the z projection. Retraining from scratch can take $10^5$
+    iterations and over ten seconds. However, the SOM prototypes trained on the
+    stream simulated with \galpyMWPotential{} are proximate in phase-space and
+    already have the correct configuration. Using these prototypes as an
+    informed initial condition, the requisite training time to convergence is
+    reduced to a few tens of thousands of iterations and less than one second
+    per arm. The SOM is only a time-limiting step of the \trackstream{} pipeline
+    once. The Kalman filter is never a time-limiting step, taking only a few
+    milliseconds to run. Thereafter, the entire pipeline is significantly faster
+    than the stream's generative model.
 
     \trackstream{}, in its current form, computes an affine parameterized mean
     track and its associated covariance. The latter incorporates the intrinsic
@@ -1561,8 +1615,8 @@ Ohio, USA\\
   Using ShowYourWork \citep{Luger2021}, all the figures in this paper can be
   reproduced from their source code at
   \href{https://github.com/nstarman/trackstream_paper}{https://github.com/nstarman/trackstream\_paper}.
-  \trackstream{} may be used under a modified BSD-3 license and is available
-  on GitHub in the repository
+  \trackstream{} may be used under a modified BSD-3 license and is available on
+  GitHub in the repository
   \href{https://github.com/nstarman/trackstream}{https://github.com/nstarman/trackstream}.
   
 
@@ -1609,7 +1663,7 @@ Ohio, USA\\
         \intertext{In matrix form,}
           \mbf{p} &= \left[\mbf{p}^{(1)} \mathellipsis \ \mbf{p}^{(K)}\right]^T \in \mathds{R}^{\mathrm{K} \times \mathrm{D}}.
         \intertext{
-          The prototype vector topology is tracked with a feature map $\mbf{Q}$,
+          The prototype vector configuration is tracked with a feature map $\mbf{Q}$,
           where each prototype has a corresponding lattice point $\mbf{q}_{k}$.
           A one-dimensional SOM means $\mbf{Q} \in {\mathds{Z}^+}^{\mathrm{K}} $ is one-dimensional
           and the only information contained in $\mbf{q}_{k}$ is its index:
@@ -1652,11 +1706,11 @@ Ohio, USA\\
         \end{equation}
 
         When the nearest prototype is updated, all other prototypes should be
-        likewise updated. More distant prototypes should move less do nearer
-        ones. To quantify how much a prototype should be updated requires not
-        only the distance matrix $\mbf{D}_Q$, but also a matrix of the coupling
-        strength between prototypes. The \textit{neighborhood matrix} -- $\rm{H}
-        \in \mathds{R}^{K \times K}$ -- has elements
+        likewise updated. More distant prototypes should move less than do
+        nearer ones. To quantify how much a prototype should be updated requires
+        not only the distance matrix $\mbf{D}_Q$, but also a matrix of the
+        coupling strength between prototypes. The \textit{neighborhood matrix}
+        -- $\rm{H} \in \mathds{R}^{K \times K}$ -- has elements
         \begin{equation}
             h_{ij} = \exp\left(-\frac{d_{ij}^2}{2\gamma^2}\right),
         \end{equation}

@@ -1,6 +1,6 @@
 """Mock stream at the solar circle."""
 
-from typing import TypeAlias, cast
+from typing import TYPE_CHECKING, Any, TypeAlias, cast
 
 import asdf
 import astropy.units as u
@@ -16,6 +16,10 @@ from trackstream._typing import CoordinateType
 
 __author__ = "Nathaniel Starkman"
 __credits__ = ["Jo Bovy"]
+
+if TYPE_CHECKING:
+    from numpy import floating
+    from numpy.typing import NDArray
 
 
 ##############################################################################
@@ -186,10 +190,7 @@ def make_noisy_orbit_data(  # noqa: PLR0913
     rnd = rnd if isinstance(rnd, Generator) else default_rng(seed=rnd)
 
     # Default error
-    if sigma is None:
-        sig = {"x": u.Quantity(100, u.pc), "y": u.Quantity(100, u.pc), "z": u.Quantity(20, u.pc)}
-    else:
-        sig = sigma
+    sig = {"x": 100 * u.pc, "y": 100 * u.pc, "z": 20 * u.pc} if sigma is None else sigma
 
     # Unordered data
     usc = make_unordered_orbit_data(
@@ -204,7 +205,7 @@ def make_noisy_orbit_data(  # noqa: PLR0913
     noisy: dict[str, u.Quantity] = {}
     for n, unit in cast("u.StructuredUnit", cast("u.Quantity", usc.data)._units).items():
         mean = getattr(usc.data, n).to_value(unit)
-        scale = cast("np.ndarray", sig[n].to_value(unit))
+        scale = cast("NDArray[floating[Any]]", sig[n].to_value(unit))
         noisy[n] = u.Quantity(rnd.normal(mean, scale=scale), unit=unit)
 
     nc = SkyCoord(usc.frame.realize_frame(CartesianRepresentation(**noisy))).transform_to(frame)

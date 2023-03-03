@@ -4,16 +4,16 @@ channels:
 dependencies:
   - python=3.10
   - pip=21.0.1
-  - numpy=1.22
-  - matplotlib=3.4.3
-  - astropy=5.1
-  - astroquery=0.4.6
-  - palettable=3.3.0
   - asdf=2.13.0
   - asdf-astropy=0.2.2
-  - galpy=1.8.0
-  - tqdm=4.64
+  - astropy=5.1
+  - astroquery=0.4.6
   - gala=1.6.1
+  - numpy=1.22
+  - palettable=3.3.0
+  - tqdm=4.64
   - pip:
+      - galpy==1.8.2
       - galstreams==1.0.3
+      - matplotlib==3.7.1
       - trackstream@git+https://github.com/nstarman/trackstream.git

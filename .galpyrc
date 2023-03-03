@@ -1,0 +1,19 @@
+[normalization]
+ro = 8.
+vo = 220.
+
+[astropy]
+astropy-units = True
+astropy-coords = True
+
+[plot]
+seaborn-bovy-defaults = False
+
+[warnings]
+verbose = False
+
+[version-check]
+do-check = True
+check-non-interactive = True
+check-non-interactive-every = 1
+last-non-interactive-check = 2023-04-12

@@ -13,7 +13,7 @@ from conf import RO, VO, get_from_vasiliev2019_table
 from galpy.actionAngle import actionAngle, actionAngleIsochroneApprox
 from galpy.df import streamdf
 from galpy.orbit import Orbit
-from galpy.potential import MWPotential2014, Potential
+from galpy.potential import MWPotential2014, Potential, turn_physical_on
 
 ##############################################################################
 # PARAMETERS
@@ -28,8 +28,8 @@ def streamdf_botharms(
     pot: Potential | list[Potential],
     action_angle: actionAngle,
     prog: SkyCoord,
-    sigv: u.Quantity = u.Quantity(0.365, u.km / u.s),
-    tdisrupt: u.Quantity = u.Quantity(4.5, u.Gyr),
+    sigv: u.Quantity = 0.365 * u.km / u.s,
+    tdisrupt: u.Quantity = 4.5 * u.Gyr,
 ) -> tuple[streamdf, streamdf]:
     """Run StreamDF for both arms.
 
@@ -42,9 +42,9 @@ def streamdf_botharms(
     prog : SkyCoord
         The progenitor coordinates.
     sigv : Quantity, optional
-        The dispersion, by default u.Quantity(0.365, u.km / u.s).
+        The dispersion, by default 0.365 * u.km / u.s.
     tdisrupt : Quantity, optional
-        The disruption time, by default u.Quantity(4.5, u.Gyr)
+        The disruption time, by default 4.5 * u.Gyr
 
     Returns
     -------
@@ -102,6 +102,7 @@ def galactocentric_track_from_sdf(sdf: streamdf) -> SkyCoord:
 
 # The potential
 pot = copy.deepcopy(MWPotential2014)
+turn_physical_on(pot, ro=RO, vo=VO)
 aa_iso = actionAngleIsochroneApprox(pot=pot, b=0.8)
 
 # Read progenitor. Requires download_Vasiliev2019_table.py
@@ -113,8 +114,8 @@ sdft, sdfl = streamdf_botharms(
     pot,
     aa_iso,
     prog_sc,
-    sigv=u.Quantity(0.365, u.km / u.s),
-    tdisrupt=u.Quantity(4.5, u.Gyr),
+    sigv=0.365 * u.km / u.s,
+    tdisrupt=4.5 * u.Gyr,
 )
 
 # True track

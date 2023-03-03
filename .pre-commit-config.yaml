@@ -56,8 +56,8 @@ repos:
     rev: 'v0.982'
     hooks:
       - id: mypy
+        additional_dependencies: ["numpy>=1.21,<1.24", typing_extensions>=4.4.0]
         args:
         - --strict
         - --ignore-missing-imports
         - --exclude=/docs/
-        - --python-version=3.10

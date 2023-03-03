@@ -12,10 +12,29 @@ import numpy as np
 import paths
 from astropy.coordinates import Galactocentric, SkyCoord
 from astropy.table import QTable
-from conf import LENGTH, SPEED, cmap, cnorm, color1, color2, plot_kalman
+from conf import (
+    ARM1_KW,
+    ARM2_KW,
+    ARM_KW,
+    LABEL_KW,
+    LENGTH,
+    SOM_KW,
+    SPEED,
+    color1,
+    color2,
+    handler_map,
+    plot_kalman,
+    plot_origin,
+)
 from trackstream import Stream
 from trackstream.track.fit import FitterStreamArmTrack
 from trackstream.track.width import Cartesian1DiffWidth, Cartesian1DWidth, Cartesian3DiffWidth, Cartesian3DWidth, Widths
+
+plt.style.use(pathlib.Path(__file__).parent / "paper.mplstyle")
+plt.rcParams["xtick.labelsize"] = 16
+plt.rcParams["ytick.labelsize"] = 16
+plt.rcParams["legend.fontsize"] = 14
+LABEL_KW = LABEL_KW | {"fontsize": 19}
 
 ##############################################################################
 # PARAMETERS
@@ -23,12 +42,12 @@ from trackstream.track.width import Cartesian1DiffWidth, Cartesian1DWidth, Carte
 # Origin
 origin = SkyCoord(
     Galactocentric(
-        x=u.Quantity(-8.25, u.kpc),
-        y=u.Quantity(0, u.kpc),
-        z=u.Quantity(16, u.kpc),
-        v_x=u.Quantity(45, u.km / u.s),
-        v_y=u.Quantity(-110, u.km / u.s),
-        v_z=u.Quantity(-15, u.km / u.s),
+        x=-8.25 * u.kpc,
+        y=0 * u.kpc,
+        z=16 * u.kpc,
+        v_x=45 * u.km / u.s,
+        v_y=-110 * u.km / u.s,
+        v_z=-15 * u.km / u.s,
     ),
 )
 
@@ -52,8 +71,8 @@ data["coords"] = SkyCoord(Galactocentric(**{k: data[k] for k in ("x", "y", "z", 
 
 data_err = QTable()
 data_err["x_err"] = 0 * data["x"]  # (for the shape)
-data_err["y_err"] = u.Quantity(0, u.kpc)
-data_err["z_err"] = u.Quantity(0, u.kpc)
+data_err["y_err"] = 0 * u.kpc
+data_err["z_err"] = 0 * u.kpc
 data_err["arm"] = data["arm"]
 
 # make stream, with pre-defined frame
@@ -68,12 +87,8 @@ stream.mask_outliers(threshold=1.1)
 
 stream_width0 = Widths(
     {
-        LENGTH: Cartesian3DWidth(x=u.Quantity(200, u.pc), y=u.Quantity(200, u.pc), z=u.Quantity(200, u.pc)),
-        SPEED: Cartesian3DiffWidth(
-            d_x=u.Quantity(5, u.km / u.s),
-            d_y=u.Quantity(5, u.km / u.s),
-            d_z=u.Quantity(5, u.km / u.s),
-        ),
+        LENGTH: Cartesian3DWidth(x=200 * u.pc, y=200 * u.pc, z=200 * u.pc),
+        SPEED: Cartesian3DiffWidth(d_x=5 * u.km / u.s, d_y=5 * u.km / u.s, d_z=5 * u.km / u.s),
     },
 )
 fitters = FitterStreamArmTrack.from_format(
@@ -86,7 +101,7 @@ fitters = FitterStreamArmTrack.from_format(
 
 # Fit track
 width_min = Widths.from_format(
-    {"length": Cartesian1DWidth(u.Quantity(300, u.pc)), "speed": Cartesian1DiffWidth(u.Quantity(4, u.km / u.s))},
+    {"length": Cartesian1DWidth(300 * u.pc), "speed": Cartesian1DiffWidth(4 * u.km / u.s)},
 )
 dtmax = u.Quantity((40, 4), dtype=[("length", float), ("speed", float)], unit=(u.pc, u.km / u.s))
 _ = stream.fit_track(
@@ -97,7 +112,7 @@ _ = stream.fit_track(
 )
 
 
-# ===================================================================
+##############################################################################
 # Plot
 
 fig, axs = plt.subplots(3, 2, figsize=(16, 12))
@@ -107,168 +122,97 @@ arm1c = stream["arm1"].coords
 arm2c = stream["arm2"].coords
 origin = stream["arm1"].origin.transform_to(frame)
 
-# -------------------------------------------------------------
+# ============================================================================
 # Data
 
-# data
-axs[0, 0].scatter(arm1c.x, arm1c.y, s=1, color=color1, label="arm 1", marker="*")
-axs[0, 0].scatter(arm2c.x, arm2c.y, s=1, color=color2, label="arm 2", marker="*")
-# origin
-axs[0, 0].scatter(origin.x, origin.y, s=10, color="red", label="origin")
-axs[0, 0].scatter(origin.x, origin.y, s=800, facecolor="None", edgecolor="red")
+axs[0, 0].scatter(arm1c.x, arm1c.y, label="arm 1", **ARM1_KW)
+plot_origin(axs[0, 0], origin.x, origin.y)
+axs[0, 0].scatter(arm2c.x, arm2c.y, label="arm 2", **ARM2_KW)
 
-axs[0, 1].scatter(arm1c.v_x, arm1c.v_y, s=1, color=color1, label="arm 1", marker="*")
-axs[0, 1].scatter(arm2c.v_x, arm2c.v_y, s=1, color=color2, label="arm 2", marker="*")
-# origin
-axs[0, 1].scatter(origin.v_x, origin.v_y, s=10, color="red", label="origin")
-axs[0, 1].scatter(origin.v_x, origin.v_y, s=800, facecolor="None", edgecolor="red")
+axs[0, 1].scatter(arm1c.v_x, arm1c.v_y, label="arm 1", **ARM1_KW)
+plot_origin(axs[0, 1], origin.v_x, origin.v_y)
+axs[0, 1].scatter(arm2c.v_x, arm2c.v_y, label="arm 2", **ARM2_KW)
 
-# -------------------------------------------------------------
+
+# ============================================================================
 # SOM
 
 ps1 = stream["arm1"].track.som.prototypes.transform_to(frame)
 ps2 = stream["arm2"].track.som.prototypes.transform_to(frame)
 
-# arm1
-axs[1, 0].scatter(
-    arm1c.x,
-    arm1c.y,
-    s=1,
-    cmap=cmap,
-    norm=cnorm,
-    c=np.linspace(0, -1, len(arm1c)),
-    label="arm 1",
-    marker="*",
-)
-# origin
-axs[1, 0].scatter(origin.x, origin.y, s=10, color="red", label="origin")
-axs[1, 0].scatter(origin.x, origin.y, s=800, facecolor="None", edgecolor="red")
-# arm2
-axs[1, 0].scatter(
-    arm2c.x,
-    arm2c.y,
-    s=1,
-    cmap=cmap,
-    norm=cnorm,
-    c=np.linspace(0, 1, len(arm2c)),
-    label="arm 2",
-    marker="*",
-)
+# arms
+axs[1, 0].scatter(arm1c.x, arm1c.y, c=np.linspace(0, -1, len(arm1c)), label="arm 1", **ARM_KW)
+plot_origin(axs[1, 0], origin.x, origin.y)
+axs[1, 0].scatter(arm2c.x, arm2c.y, c=np.linspace(0, 1, len(arm2c)), label="arm 2", **ARM_KW)
 # som
-axs[1, 0].plot(ps1.x, ps1.y, c="k")
-axs[1, 0].scatter(ps1.x, ps1.y, marker="P", edgecolors="black", facecolor="none")
-axs[1, 0].plot(ps2.x, ps2.y, c="k")
-axs[1, 0].scatter(ps2.x, ps2.y, marker="P", edgecolors="black", facecolor="none")
+axs[1, 0].plot(ps1.x, ps1.y, **SOM_KW, markeredgewidth=2, label="SOM")
+axs[1, 0].plot(ps2.x, ps2.y, **SOM_KW, markeredgewidth=2)
 
-# arm1
-axs[1, 1].scatter(
-    arm1c.v_x,
-    arm1c.v_y,
-    s=1,
-    cmap=cmap,
-    norm=cnorm,
-    c=np.linspace(0, -1, len(arm1c)),
-    label="arm 1",
-    marker="*",
-)
-# origin
-axs[1, 1].scatter(origin.v_x, origin.v_y, s=10, color="red", label="origin")
-axs[1, 1].scatter(origin.v_x, origin.v_y, s=800, facecolor="None", edgecolor="red")
-# arm2
-axs[1, 1].scatter(
-    arm2c.v_x,
-    arm2c.v_y,
-    s=1,
-    cmap=cmap,
-    norm=cnorm,
-    c=np.linspace(0, 1, len(arm2c)),
-    label="arm 2",
-    marker="*",
-)
+
+# arms
+axs[1, 1].scatter(arm1c.v_x, arm1c.v_y, c=np.linspace(0, -1, len(arm1c)), label="arm 1", **ARM_KW)
+plot_origin(axs[1, 1], origin.v_x, origin.v_y)
+axs[1, 1].scatter(arm2c.v_x, arm2c.v_y, c=np.linspace(0, 1, len(arm2c)), label="arm 2", **ARM_KW)
 # som
-axs[1, 1].plot(ps1.v_x, ps1.v_y, c="k")
-axs[1, 1].scatter(ps1.v_x, ps1.v_y, marker="P", edgecolors="black", facecolor="none")
-axs[1, 1].plot(ps2.v_x, ps2.v_y, c="k")
-axs[1, 1].scatter(ps2.v_x, ps2.v_y, marker="P", edgecolors="black", facecolor="none")
+axs[1, 1].plot(ps1.v_x, ps1.v_y, **SOM_KW, markeredgewidth=2, label="SOM")
+axs[1, 1].plot(ps2.v_x, ps2.v_y, **SOM_KW, markeredgewidth=2)
 
 
-# -------------------------------------------------------------
+# ============================================================================
 # Kalman
 
 # arm1
-axs[2, 0].scatter(
-    arm1c.x,
-    arm1c.y,
-    s=1,
-    cmap=cmap,
-    norm=cnorm,
-    c=np.linspace(0, -1, len(arm1c)),
-    label="arm 1",
-    marker="*",
-)
+axs[2, 0].scatter(arm1c.x, arm1c.y, c=np.linspace(0, -1, len(arm1c)), label="arm 1", **ARM_KW)
 # origin
-axs[2, 0].scatter(origin.x, origin.y, s=10, color="red", label="origin")
-axs[2, 0].scatter(origin.x, origin.y, s=800, facecolor="None", edgecolor="red")
+plot_origin(axs[2, 0], origin.x, origin.y)
 # arm2
-axs[2, 0].scatter(
-    arm2c.x,
-    arm2c.y,
-    s=1,
-    cmap=cmap,
-    norm=cnorm,
-    c=np.linspace(0, 1, len(arm2c)),
-    label="arm 2",
-    marker="*",
-)
+axs[2, 0].scatter(arm2c.x, arm2c.y, c=np.linspace(0, 1, len(arm2c)), label="arm 2", **ARM_KW)
 # kalman
-for arm in ("arm1", "arm2"):
-    plot_kalman(axs[2, 0], stream[arm], kind="positions")
+plot_kalman(axs[2, 0], stream["arm1"], kind="positions", label="track")
+plot_kalman(axs[2, 0], stream["arm2"], kind="positions")
+
 
 # arm1
-axs[2, 1].scatter(
-    arm1c.v_x,
-    arm1c.v_y,
-    s=1,
-    cmap=cmap,
-    norm=cnorm,
-    c=np.linspace(0, -1, len(arm1c)),
-    label="arm 1",
-    marker="*",
-)
+axs[2, 1].scatter(arm1c.v_x, arm1c.v_y, c=np.linspace(0, -1, len(arm1c)), label="arm 1", **ARM_KW)
 # origin
-axs[2, 1].scatter(origin.v_x, origin.v_y, s=10, color="red", label="origin")
-axs[2, 1].scatter(origin.v_x, origin.v_y, s=800, facecolor="None", edgecolor="red")
+plot_origin(axs[2, 1], origin.v_x, origin.v_y)
 # arm2
-axs[2, 1].scatter(
-    arm2c.v_x,
-    arm2c.v_y,
-    s=1,
-    cmap=cmap,
-    norm=cnorm,
-    c=np.linspace(0, 1, len(arm2c)),
-    label="arm 2",
-    marker="*",
-)
+axs[2, 1].scatter(arm2c.v_x, arm2c.v_y, c=np.linspace(0, 1, len(arm2c)), label="arm 2", **ARM_KW)
 # kalman
-plot_kalman(axs[2, 1], stream["arm1"], kind="kinematics")
+plot_kalman(axs[2, 1], stream["arm1"], kind="kinematics", label="track")
 plot_kalman(axs[2, 1], stream["arm2"], kind="kinematics")
 
+# ============================================================================
 
-# -------------------------------------------------------------------
+for i, ax in enumerate(axs[:, 0]):
+    if i != 2:
+        ax.set_xlabel("")
+        ax.set_xticklabels([])
+    ax.set_ylabel(rf"$y$ (GXYC) [{ax.get_ylabel()}]", **LABEL_KW)
+
+axs[-1, 0].set_xlabel(rf"$x$ (GXYC) [{axs[2, 0].get_xlabel()}]", **LABEL_KW)
+
+for i, ax in enumerate(axs[:, 1]):
+    if i < 2:
+        ax.set_xlabel("")
+        ax.set_xticklabels([])
+    ax.set_ylabel(rf"$v_y$ (GXYC) [{ax.get_ylabel()}]", **LABEL_KW)
+
+axs[-1, 1].set_xlabel(rf"$v_x$ (GXYC) [{axs[2, 1].get_xlabel()}]", **LABEL_KW)
 
 
-for ax in axs[:, 0].flat:
-    ax.set_xlabel(f"x (Galactocentric) [{ax.get_xlabel()}]", fontsize=16)
-    ax.set_ylabel(f"y (Galactocentric) [{ax.get_ylabel()}]", fontsize=16)
-    ax.legend(loc="lower left", fontsize=13)
-    ax.set_rasterization_zorder(10000)
+for ax in axs.flat:
+    lgnd = ax.legend(loc="lower left", handler_map=handler_map)
 
-for ax in axs[:, 1].flat:
-    ax.set_xlabel(f"$v_x$ (Galactocentric) [{ax.get_xlabel()}]", fontsize=16)
-    ax.set_ylabel(f"$v_y$ (Galactocentric) [{ax.get_ylabel()}]", fontsize=16)
-    ax.legend(loc="lower left", fontsize=13)
+    for handle in lgnd.legend_handles:
+        if handle.get_label() == "arm 1":
+            handle.set_color(color1)
+            handle.set_facecolor(color1)
+        elif handle.get_label() == "arm 2":
+            handle.set_color(color2)
+            handle.set_facecolor(color2)
+
     ax.set_rasterization_zorder(10000)
 
 fig.tight_layout()
-
 fig.savefig(str(paths.figures / pathlib.Path(__file__).name.replace(".py", ".pdf")), bbox_inches="tight")
