@@ -1,35 +1,27 @@
 """Show the Kalman filter method."""
 
-##############################################################################
-# IMPORTS
 
 from __future__ import annotations
 
-# STDLIB
 import pathlib
 import warnings
 
-# THIRD-PARTY
 import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
-
-# FIRST-PARTY
+import paths
+from conf import LENGTH, cmap, cnorm, get_ngc5466_stream, plot_kalman
 from trackstream.frame import fit_stream as fit_frame_to_stream
 from trackstream.track import FitterStreamArmTrack
 from trackstream.track.fit import Times
 from trackstream.track.width import AngularWidth, UnitSphericalWidth, Widths
-
-# LOCAL
-import paths
-from conf import LENGTH, cmap, cnorm, get_NGC5466_stream, plot_kalman
 
 ##############################################################################
 # SCRIPT
 ##############################################################################
 
 # Get stream
-stream = get_NGC5466_stream()
+stream = get_ngc5466_stream()
 # Fit frame
 stream = fit_frame_to_stream(stream, force=True, rot0=u.Quantity(110, u.deg))
 

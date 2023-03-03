@@ -1,38 +1,27 @@
 """Configuration."""
 
-##############################################################################
-# IMPORTS
 
 from __future__ import annotations
 
-# STDLIB
 from typing import TYPE_CHECKING, Literal
 
-# THIRD-PARTY
 import astropy.coordinates as coords
 import astropy.units as u
 import numpy as np
+import paths
 from astropy.table import QTable, vstack
 from astropy.units import Quantity
 from astropy.visualization import quantity_support
 from matplotlib.collections import EllipseCollection
 from matplotlib.colors import Normalize
 from palettable.scientific.diverging import Vik_15
-
-# FIRST-PARTY
 from trackstream import Stream
 from trackstream.track.fit.utils import _v2c
 from trackstream.track.utils import covariance_ellipse
 
-# LOCAL
-import paths
-
 if TYPE_CHECKING:
-    # THIRD-PARTY
     from astropy.coordinates import SkyCoord
     from matplotlib.axes import Axes
-
-    # FIRST-PARTY
     from trackstream.stream import StreamArm
 
 
@@ -65,12 +54,13 @@ GC_47TUC_Mass = u.Quantity(7e5, u.solMass)
 ##############################################################################
 
 
-def get_from_Vasiliev2019_table(name: str) -> SkyCoord:
+def get_from_vasiliev2019_table(name: str) -> SkyCoord:
     """Get coordinates from the Vasiliev 2019 table.
 
     Parameters
     ----------
     name : str
+        Name of the globular cluster.
 
     Returns
     -------
@@ -93,7 +83,7 @@ def get_from_Vasiliev2019_table(name: str) -> SkyCoord:
 #####################################################################
 
 
-def get_NGC5466_stream(which: Literal["unperturbed", "perturbed"] = "unperturbed") -> Stream:
+def get_ngc5466_stream(which: Literal["unperturbed", "perturbed"] = "unperturbed") -> Stream:
     """Get a Stream for NGC5466.
 
     Returns
@@ -125,7 +115,7 @@ def get_NGC5466_stream(which: Literal["unperturbed", "perturbed"] = "unperturbed
             v_x=u.Quantity(56, u.km / u.s),
             v_y=u.Quantity(-92, u.km / u.s),
             v_z=u.Quantity(51, u.km / u.s),
-        )
+        ),
     )
 
     # Assigning arms
@@ -146,7 +136,7 @@ def get_NGC5466_stream(which: Literal["unperturbed", "perturbed"] = "unperturbed
     return Stream.from_data(data, data_err=data_err, origin=origin, frame=coords.ICRS(), name="NGC5466 in MW")
 
 
-def read_NGC5466_mw_gc_model() -> SkyCoord:
+def read_ngc5466_mw_gc_model() -> SkyCoord:
     """Read NGC5466 Milky Way Model simulation from data directory.
 
     Returns
@@ -157,7 +147,7 @@ def read_NGC5466_mw_gc_model() -> SkyCoord:
     return coords.SkyCoord.guess_from_table(data, representation_type="cartesian", frame="galactocentric")
 
 
-def get_NGC5466_mw_gc_stream() -> Stream:
+def get_ngc5466_mw_gc_stream() -> Stream:
     """Get a Stream for NGC5466, fitting a track.
 
     Returns
@@ -166,10 +156,10 @@ def get_NGC5466_mw_gc_stream() -> Stream:
         With a fit track.
     """
     # Read data
-    sc = read_NGC5466_mw_gc_model()
+    sc = read_ngc5466_mw_gc_model()
 
     origin = coords.SkyCoord(
-        coords.Galactocentric(x=Quantity(4.67, u.kpc), y=Quantity(3.0, u.kpc), z=Quantity(15.3, u.kpc))
+        coords.Galactocentric(x=Quantity(4.67, u.kpc), y=Quantity(3.0, u.kpc), z=Quantity(15.3, u.kpc)),
     )
     arm1 = sc.x <= origin.x
     arm2 = sc.x > origin.x
@@ -179,7 +169,6 @@ def get_NGC5466_mw_gc_stream() -> Stream:
     data["coord"] = sc.icrs  # observer coordinates
     data["ra_err"] = 0
     data["dec_err"] = 0
-    # data["distance_err"] = 1 * u.pc
     data["tail"] = "none"
     data["tail"][arm1] = "arm1"
     data["tail"][arm2] = "arm2"
@@ -201,7 +190,9 @@ def get_pal5_stream(subsample: int = 100) -> Stream:
     """
     # Origin
     origin = coords.SkyCoord(
-        ra=coords.Angle("15h 16m 05.3s"), dec=coords.Angle("-00:06:41 degree"), distance=u.Quantity(23, u.kpc)
+        ra=coords.Angle("15h 16m 05.3s"),
+        dec=coords.Angle("-00:06:41 degree"),
+        distance=u.Quantity(23, u.kpc),
     )
 
     # Read data from Ibata et al. 2017
@@ -242,7 +233,11 @@ def get_pal5_stream(subsample: int = 100) -> Stream:
 
 
 def plot_kalman(
-    ax: Axes, arm: StreamArm, kind: Literal["positions", "kinematics"], step: int = 5, label: str = ""
+    ax: Axes,
+    arm: StreamArm,
+    kind: Literal["positions", "kinematics"],
+    step: int = 5,
+    label: str = "",
 ) -> None:
     """Plot Kalman filter.
 
@@ -254,24 +249,28 @@ def plot_kalman(
         The arm to plot.
     kind : {"positions", "kinematics}
         Whether to plot positions or kinematics.
+    step : int, optional
+        Plot every `step`th point, by default 5.
+    label : str, optional
+        Label for the plot, by default "".
     """
     track = arm.track
     path = track.path
-    crd = _v2c(track.kalman, np.array(path._meta["smooth"].x[:, ::2]))
+    crd = _v2c(track.kalman, np.array(path._meta["smooth"].x[:, ::2]))  # noqa: SLF001
 
     if kind == "positions":
         components = tuple(crd.get_representation_component_names().keys())
         x, y = getattr(crd, components[0]), getattr(crd, components[1])
-        Ps = path._meta["smooth"].P[:, 0:4:2, 0:4:2]
+        covs = path._meta["smooth"].P[:, 0:4:2, 0:4:2]  # noqa: SLF001
     else:
         components = tuple(crd.get_representation_component_names("s").keys())
         x, y = getattr(crd, components[0]), getattr(crd, components[1])
-        Ps = path._meta["smooth"].P[:, 4::2, 4::2]
+        covs = path._meta["smooth"].P[:, 4::2, 4::2]  # noqa: SLF001
 
     ax.plot(x, y, zorder=100, c="k", label=label)
     subsel = slice(None, None, step)
     mean = np.array((x, y)).reshape((2, -1)).T[subsel]
-    angle, wh = covariance_ellipse(Ps[subsel], nstd=1)
+    angle, wh = covariance_ellipse(covs[subsel], nstd=1)
     width = 2 * np.atleast_1d(wh[..., 0])
     height = 2 * np.atleast_1d(wh[..., 1])
     ec = EllipseCollection(

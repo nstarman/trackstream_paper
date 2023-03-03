@@ -1,24 +1,16 @@
 """Plot results of running TrackStream on Palomar 5."""
 
-##############################################################################
-# IMPORTS
 
-# STDLIB
 import pathlib
 
-# THIRD-PARTY
 import astropy.units as u
 import matplotlib.pyplot as plt
-
-# FIRST-PARTY
+import paths
+from conf import LENGTH, color1, color2, get_pal5_stream, plot_kalman
 from trackstream.frame import fit_stream
 from trackstream.track import FitterStreamArmTrack
 from trackstream.track.fit import Times
 from trackstream.track.width import UnitSphericalWidth, Widths
-
-# LOCAL
-import paths
-from conf import LENGTH, color1, color2, get_pal5_stream, plot_kalman
 
 ##############################################################################
 # SCRIPT

@@ -1,29 +1,21 @@
 """Run TrackStream on an N-Body."""
 
-##############################################################################
-# IMPORTS
 
 from __future__ import annotations
 
-# STDLIB
 import pathlib
 
-# THIRD-PARTY
 import astropy.coordinates as coords
 import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
+import paths
 from astropy.coordinates import Galactocentric, SkyCoord
 from astropy.table import QTable
-
-# FIRST-PARTY
+from conf import LENGTH, SPEED, cmap, cnorm, color1, color2, plot_kalman
 from trackstream import Stream
 from trackstream.track.fit import FitterStreamArmTrack
 from trackstream.track.width import Cartesian1DiffWidth, Cartesian1DWidth, Cartesian3DiffWidth, Cartesian3DWidth, Widths
-
-# LOCAL
-import paths
-from conf import LENGTH, SPEED, cmap, cnorm, color1, color2, plot_kalman
 
 ##############################################################################
 # PARAMETERS
@@ -37,7 +29,7 @@ origin = SkyCoord(
         v_x=u.Quantity(45, u.km / u.s),
         v_y=u.Quantity(-110, u.km / u.s),
         v_z=u.Quantity(-15, u.km / u.s),
-    )
+    ),
 )
 
 ##############################################################################
@@ -78,9 +70,11 @@ stream_width0 = Widths(
     {
         LENGTH: Cartesian3DWidth(x=u.Quantity(200, u.pc), y=u.Quantity(200, u.pc), z=u.Quantity(200, u.pc)),
         SPEED: Cartesian3DiffWidth(
-            d_x=u.Quantity(5, u.km / u.s), d_y=u.Quantity(5, u.km / u.s), d_z=u.Quantity(5, u.km / u.s)
+            d_x=u.Quantity(5, u.km / u.s),
+            d_y=u.Quantity(5, u.km / u.s),
+            d_z=u.Quantity(5, u.km / u.s),
         ),
-    }
+    },
 )
 fitters = FitterStreamArmTrack.from_format(
     stream,
@@ -92,7 +86,7 @@ fitters = FitterStreamArmTrack.from_format(
 
 # Fit track
 width_min = Widths.from_format(
-    {"length": Cartesian1DWidth(u.Quantity(300, u.pc)), "speed": Cartesian1DiffWidth(u.Quantity(4, u.km / u.s))}
+    {"length": Cartesian1DWidth(u.Quantity(300, u.pc)), "speed": Cartesian1DiffWidth(u.Quantity(4, u.km / u.s))},
 )
 dtmax = u.Quantity((40, 4), dtype=[("length", float), ("speed", float)], unit=(u.pc, u.km / u.s))
 _ = stream.fit_track(
@@ -137,14 +131,28 @@ ps2 = stream["arm2"].track.som.prototypes.transform_to(frame)
 
 # arm1
 axs[1, 0].scatter(
-    arm1c.x, arm1c.y, s=1, cmap=cmap, norm=cnorm, c=np.linspace(0, -1, len(arm1c)), label="arm 1", marker="*"
+    arm1c.x,
+    arm1c.y,
+    s=1,
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, -1, len(arm1c)),
+    label="arm 1",
+    marker="*",
 )
 # origin
 axs[1, 0].scatter(origin.x, origin.y, s=10, color="red", label="origin")
 axs[1, 0].scatter(origin.x, origin.y, s=800, facecolor="None", edgecolor="red")
 # arm2
 axs[1, 0].scatter(
-    arm2c.x, arm2c.y, s=1, cmap=cmap, norm=cnorm, c=np.linspace(0, 1, len(arm2c)), label="arm 2", marker="*"
+    arm2c.x,
+    arm2c.y,
+    s=1,
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, 1, len(arm2c)),
+    label="arm 2",
+    marker="*",
 )
 # som
 axs[1, 0].plot(ps1.x, ps1.y, c="k")
@@ -154,14 +162,28 @@ axs[1, 0].scatter(ps2.x, ps2.y, marker="P", edgecolors="black", facecolor="none"
 
 # arm1
 axs[1, 1].scatter(
-    arm1c.v_x, arm1c.v_y, s=1, cmap=cmap, norm=cnorm, c=np.linspace(0, -1, len(arm1c)), label="arm 1", marker="*"
+    arm1c.v_x,
+    arm1c.v_y,
+    s=1,
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, -1, len(arm1c)),
+    label="arm 1",
+    marker="*",
 )
 # origin
 axs[1, 1].scatter(origin.v_x, origin.v_y, s=10, color="red", label="origin")
 axs[1, 1].scatter(origin.v_x, origin.v_y, s=800, facecolor="None", edgecolor="red")
 # arm2
 axs[1, 1].scatter(
-    arm2c.v_x, arm2c.v_y, s=1, cmap=cmap, norm=cnorm, c=np.linspace(0, 1, len(arm2c)), label="arm 2", marker="*"
+    arm2c.v_x,
+    arm2c.v_y,
+    s=1,
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, 1, len(arm2c)),
+    label="arm 2",
+    marker="*",
 )
 # som
 axs[1, 1].plot(ps1.v_x, ps1.v_y, c="k")
@@ -175,14 +197,28 @@ axs[1, 1].scatter(ps2.v_x, ps2.v_y, marker="P", edgecolors="black", facecolor="n
 
 # arm1
 axs[2, 0].scatter(
-    arm1c.x, arm1c.y, s=1, cmap=cmap, norm=cnorm, c=np.linspace(0, -1, len(arm1c)), label="arm 1", marker="*"
+    arm1c.x,
+    arm1c.y,
+    s=1,
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, -1, len(arm1c)),
+    label="arm 1",
+    marker="*",
 )
 # origin
 axs[2, 0].scatter(origin.x, origin.y, s=10, color="red", label="origin")
 axs[2, 0].scatter(origin.x, origin.y, s=800, facecolor="None", edgecolor="red")
 # arm2
 axs[2, 0].scatter(
-    arm2c.x, arm2c.y, s=1, cmap=cmap, norm=cnorm, c=np.linspace(0, 1, len(arm2c)), label="arm 2", marker="*"
+    arm2c.x,
+    arm2c.y,
+    s=1,
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, 1, len(arm2c)),
+    label="arm 2",
+    marker="*",
 )
 # kalman
 for arm in ("arm1", "arm2"):
@@ -190,14 +226,28 @@ for arm in ("arm1", "arm2"):
 
 # arm1
 axs[2, 1].scatter(
-    arm1c.v_x, arm1c.v_y, s=1, cmap=cmap, norm=cnorm, c=np.linspace(0, -1, len(arm1c)), label="arm 1", marker="*"
+    arm1c.v_x,
+    arm1c.v_y,
+    s=1,
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, -1, len(arm1c)),
+    label="arm 1",
+    marker="*",
 )
 # origin
 axs[2, 1].scatter(origin.v_x, origin.v_y, s=10, color="red", label="origin")
 axs[2, 1].scatter(origin.v_x, origin.v_y, s=800, facecolor="None", edgecolor="red")
 # arm2
 axs[2, 1].scatter(
-    arm2c.v_x, arm2c.v_y, s=1, cmap=cmap, norm=cnorm, c=np.linspace(0, 1, len(arm2c)), label="arm 2", marker="*"
+    arm2c.v_x,
+    arm2c.v_y,
+    s=1,
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, 1, len(arm2c)),
+    label="arm 2",
+    marker="*",
 )
 # kalman
 plot_kalman(axs[2, 1], stream["arm1"], kind="kinematics")

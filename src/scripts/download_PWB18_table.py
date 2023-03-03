@@ -1,11 +1,8 @@
 """Configuration."""
 
-# THIRD-PARTY
 import numpy as np
-from astropy.table import QTable
-
-# LOCAL
 import paths
+from astropy.table import QTable
 
 ##############################################################################
 # CODE
@@ -138,7 +135,7 @@ tbl["thin_stream_sel"] = np.array(
         False, True, True, False, False, True, True, True, True, False, False, False, True, True, False, False,
         True, False, False, True, True, False, True, False, True, True, True, False, True, True, False, False,
         False, False, False, False, False,
-    ]
+    ],
 )
 # fmt: on
 

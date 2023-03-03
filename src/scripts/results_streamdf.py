@@ -1,34 +1,26 @@
 """Run TrackStream on a streamdf mock stream."""
 
-##############################################################################
-# IMPORTS
 
 from __future__ import annotations
 
-# STDLIB
 import pathlib
 
-# THIRD-PARTY
 import asdf
 import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
-
-# FIRST-PARTY
+import paths
+from conf import LENGTH, SPEED, cmap, cnorm, color1, color2, get_from_vasiliev2019_table, plot_kalman
 from trackstream import Stream
 from trackstream.track import FitterStreamArmTrack
 from trackstream.track.fit import Times
 from trackstream.track.width import Cartesian1DiffWidth, Cartesian1DWidth, Cartesian3DiffWidth, Cartesian3DWidth, Widths
 
-# LOCAL
-import paths
-from conf import LENGTH, SPEED, cmap, cnorm, color1, color2, get_from_Vasiliev2019_table, plot_kalman
-
 ##############################################################################
 # SCRIPT
 ##############################################################################
 
-prog_sc = get_from_Vasiliev2019_table("NGC 104")
+prog_sc = get_from_vasiliev2019_table("NGC 104")
 
 # GET DATA
 with asdf.open(paths.data / "streamdf.asdf") as af:
@@ -52,9 +44,11 @@ stream_width0 = Widths.from_format(
     {
         "length": Cartesian3DWidth(x=u.Quantity(100, u.pc), y=u.Quantity(100, u.pc), z=u.Quantity(100, u.pc)),
         "speed": Cartesian3DiffWidth(
-            d_x=u.Quantity(10, u.km / u.s), d_y=u.Quantity(10, u.km / u.s), d_z=u.Quantity(10, u.km / u.s)
+            d_x=u.Quantity(10, u.km / u.s),
+            d_y=u.Quantity(10, u.km / u.s),
+            d_z=u.Quantity(10, u.km / u.s),
         ),
-    }
+    },
 )
 
 fitters = FitterStreamArmTrack.from_format(
@@ -66,7 +60,7 @@ fitters = FitterStreamArmTrack.from_format(
 )
 
 width_min = Widths.from_format(
-    {"length": Cartesian1DWidth(u.Quantity(300, u.pc)), "speed": Cartesian1DiffWidth(u.Quantity(4, u.km / u.s))}
+    {"length": Cartesian1DWidth(u.Quantity(300, u.pc)), "speed": Cartesian1DiffWidth(u.Quantity(4, u.km / u.s))},
 )
 track = stream.fit_track(
     fitters=fitters,
@@ -117,14 +111,28 @@ ps2 = stream["arm2"].track.som.prototypes.transform_to(frame)
 
 # arm1
 axs[1, 0].scatter(
-    arm1c.x, arm1c.y, s=1, label="arm 1", marker="*", cmap=cmap, norm=cnorm, c=np.linspace(0, -1, len(arm1c))
+    arm1c.x,
+    arm1c.y,
+    s=1,
+    label="arm 1",
+    marker="*",
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, -1, len(arm1c)),
 )
 # origin
 axs[1, 0].scatter(origin.x, origin.y, s=10, color="red", label="origin")
 axs[1, 0].scatter(origin.x, origin.y, s=800, facecolor="None", edgecolor="red")
 # arm2
 axs[1, 0].scatter(
-    arm2c.x, arm2c.y, s=1, label="arm 2", marker="*", cmap=cmap, norm=cnorm, c=np.linspace(0, 1, len(arm2c))
+    arm2c.x,
+    arm2c.y,
+    s=1,
+    label="arm 2",
+    marker="*",
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, 1, len(arm2c)),
 )
 # som
 axs[1, 0].plot(ps1.x, ps1.y, c="k")
@@ -134,14 +142,28 @@ axs[1, 0].scatter(ps2.x, ps2.y, marker="P", edgecolors="black", facecolor="none"
 
 # data
 axs[1, 1].scatter(
-    arm1c.v_x, arm1c.v_y, s=1, label="arm 1", marker="*", cmap=cmap, norm=cnorm, c=np.linspace(0, -1, len(arm1c))
+    arm1c.v_x,
+    arm1c.v_y,
+    s=1,
+    label="arm 1",
+    marker="*",
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, -1, len(arm1c)),
 )
 # origin
 axs[1, 1].scatter(origin.v_x, origin.v_y, s=10, color="red", label="origin")
 axs[1, 1].scatter(origin.v_x, origin.v_y, s=800, facecolor="None", edgecolor="red")
 # arm2
 axs[1, 1].scatter(
-    arm2c.v_x, arm2c.v_y, s=1, label="arm 2", marker="*", cmap=cmap, norm=cnorm, c=np.linspace(0, 1, len(arm2c))
+    arm2c.v_x,
+    arm2c.v_y,
+    s=1,
+    label="arm 2",
+    marker="*",
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, 1, len(arm2c)),
 )
 # som
 axs[1, 1].plot(ps1.v_x, ps1.v_y, c="k")
@@ -154,14 +176,28 @@ axs[1, 1].scatter(ps2.v_x, ps2.v_y, marker="P", edgecolors="black", facecolor="n
 
 # arm1
 axs[2, 0].scatter(
-    arm1c.x, arm1c.y, s=1, label="arm 1", marker="*", cmap=cmap, norm=cnorm, c=np.linspace(0, -1, len(arm1c))
+    arm1c.x,
+    arm1c.y,
+    s=1,
+    label="arm 1",
+    marker="*",
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, -1, len(arm1c)),
 )
 # origin
 axs[2, 0].scatter(origin.x, origin.y, s=10, color="red", label="origin")
 axs[2, 0].scatter(origin.x, origin.y, s=800, facecolor="None", edgecolor="red")
 # arm2
 axs[2, 0].scatter(
-    arm2c.x, arm2c.y, s=1, label="arm 2", marker="*", cmap=cmap, norm=cnorm, c=np.linspace(0, 1, len(arm2c))
+    arm2c.x,
+    arm2c.y,
+    s=1,
+    label="arm 2",
+    marker="*",
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, 1, len(arm2c)),
 )
 # kalman
 plot_kalman(axs[2, 0], stream["arm1"], kind="positions")
@@ -169,14 +205,28 @@ plot_kalman(axs[2, 0], stream["arm2"], kind="positions")
 
 # arm1
 axs[2, 1].scatter(
-    arm1c.v_x, arm1c.v_y, s=1, label="arm 1", marker="*", cmap=cmap, norm=cnorm, c=np.linspace(0, -1, len(arm1c))
+    arm1c.v_x,
+    arm1c.v_y,
+    s=1,
+    label="arm 1",
+    marker="*",
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, -1, len(arm1c)),
 )
 # origin
 axs[2, 1].scatter(origin.v_x, origin.v_y, s=10, color="red", label="origin")
 axs[2, 1].scatter(origin.v_x, origin.v_y, s=800, facecolor="None", edgecolor="red")
 # arm2
 axs[2, 1].scatter(
-    arm2c.v_x, arm2c.v_y, s=1, label="arm 2", marker="*", cmap=cmap, norm=cnorm, c=np.linspace(0, 1, len(arm2c))
+    arm2c.v_x,
+    arm2c.v_y,
+    s=1,
+    label="arm 2",
+    marker="*",
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, 1, len(arm2c)),
 )
 # kalman
 plot_kalman(axs[2, 1], stream["arm1"], kind="kinematics")
@@ -250,7 +300,14 @@ axs[0, 1].indicate_inset_zoom(axins, edgecolor="black")
 
 axins = axs[1, 1].inset_axes([xi, yi, dx, dy])
 axins.scatter(
-    arm2c.v_x, arm2c.v_y, s=1, label="arm 1", marker="*", cmap=cmap, norm=cnorm, c=np.linspace(0, -1, len(arm2c))
+    arm2c.v_x,
+    arm2c.v_y,
+    s=1,
+    label="arm 1",
+    marker="*",
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, -1, len(arm2c)),
 )
 axins.plot(ps2.v_x, ps2.v_y, c="k")
 axins.scatter(ps2.v_x, ps2.v_y, marker="P", edgecolors="black", facecolor="none")
@@ -265,7 +322,14 @@ axs[1, 1].indicate_inset_zoom(axins, edgecolor="black")
 axins = axs[2, 1].inset_axes([xi, yi, dx, dy])
 plot_kalman(axins, stream["arm2"], kind="kinematics")
 axins.scatter(
-    arm2c.v_x, arm2c.v_y, s=1, label="arm 1", marker="*", cmap=cmap, norm=cnorm, c=np.linspace(0, -1, len(arm2c))
+    arm2c.v_x,
+    arm2c.v_y,
+    s=1,
+    label="arm 1",
+    marker="*",
+    cmap=cmap,
+    norm=cnorm,
+    c=np.linspace(0, -1, len(arm2c)),
 )
 axins.set_xlim(x1, x2)
 axins.set_ylim(y1, y2)

@@ -1,13 +1,8 @@
 """Download data from Vasiliev (2019) and save as an ECSV."""
 
-##############################################################################
-# IMPORTS
 
-# THIRD-PARTY
-from astroquery.vizier import Vizier
-
-# LOCAL
 import paths
+from astroquery.vizier import Vizier
 
 ##############################################################################
 # PARAMETERS

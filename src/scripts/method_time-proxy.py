@@ -1,39 +1,31 @@
 """Plot example of the time proxy."""
 
-##############################################################################
-# IMPORTS
 
 from __future__ import annotations
 
-# STDLIB
 import pathlib
 import warnings
 
-# THIRD-PARTY
 import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
+import paths
+from conf import LENGTH, cmap, cnorm, get_ngc5466_stream
 from matplotlib import cm
 from matplotlib.colors import Normalize
 from scipy.interpolate import interp1d
-
-# FIRST-PARTY
 from trackstream.frame import fit_stream
 from trackstream.track import FitterStreamArmTrack
 from trackstream.track.fit import Times
 from trackstream.track.fit.timesteps import make_timesteps
 from trackstream.track.width import UnitSphericalWidth, Widths
 
-# LOCAL
-import paths
-from conf import LENGTH, cmap, cnorm, get_NGC5466_stream
-
 ##############################################################################
 # SCRIPT
 ##############################################################################
 
 # Get stream
-stream = get_NGC5466_stream()
+stream = get_ngc5466_stream()
 # Fit frame
 stream = fit_stream(stream, force=True, rot0=u.Quantity(110, u.deg))
 
@@ -71,7 +63,7 @@ ax = fig.add_subplot()
 # ---------------------------------
 # Arm 1
 
-dts1 = make_timesteps(stream["arm1"].coords, stream["arm1"].track.kalman, dt0=Times({LENGTH: u.Quantity(0, u.deg)}),)[
+dts1 = make_timesteps(stream["arm1"].coords, stream["arm1"].track.kalman, dt0=Times({LENGTH: u.Quantity(0, u.deg)}))[
     "length"
 ].to_value(u.deg)
 ds1 = stream["arm1"].coords[1:].separation(stream["arm1"].coords[:-1]).to_value(u.deg)
@@ -99,7 +91,7 @@ ax.scatter(
 # ---------------------------------
 # Arm 2
 
-dts2 = make_timesteps(stream["arm2"].coords, stream["arm2"].track.kalman, dt0=Times({LENGTH: u.Quantity(0, u.deg)}),)[
+dts2 = make_timesteps(stream["arm2"].coords, stream["arm2"].track.kalman, dt0=Times({LENGTH: u.Quantity(0, u.deg)}))[
     "length"
 ].to_value(u.deg)
 ds2 = stream["arm2"].coords[1:].separation(stream["arm2"].coords[:-1]).to_value(u.deg)

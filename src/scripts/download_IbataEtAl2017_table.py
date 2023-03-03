@@ -1,15 +1,10 @@
 """Configuration."""
 
-##############################################################################
-# IMPORTS
 
-# THIRD-PARTY
 import astropy.units as u
+import paths
 from astropy.coordinates import Angle
 from astroquery.vizier import Vizier
-
-# LOCAL
-import paths
 
 ##############################################################################
 # PARAMETERS

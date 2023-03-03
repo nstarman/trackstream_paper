@@ -1,25 +1,19 @@
 """Download data from Vasiliev (2019) and save as an ECSV."""
 
-##############################################################################
-# IMPORTS
 
-# STDLIB
 import copy
 
-# THIRD-PARTY
 import asdf
 import astropy.units as u
 import numpy as np
+import paths
 from astropy.coordinates import Galactocentric, SkyCoord, concatenate
 from astropy.table import QTable
+from conf import RO, VO, get_from_vasiliev2019_table
 from galpy.actionAngle import actionAngle, actionAngleIsochroneApprox
 from galpy.df import streamdf
 from galpy.orbit import Orbit
 from galpy.potential import MWPotential2014, Potential
-
-# LOCAL
-import paths
-from conf import RO, VO, get_from_Vasiliev2019_table
 
 ##############################################################################
 # PARAMETERS
@@ -32,7 +26,7 @@ np.random.seed(4)
 
 def streamdf_botharms(
     pot: Potential | list[Potential],
-    aA: actionAngle,
+    action_angle: actionAngle,
     prog: SkyCoord,
     sigv: u.Quantity = u.Quantity(0.365, u.km / u.s),
     tdisrupt: u.Quantity = u.Quantity(4.5, u.Gyr),
@@ -43,7 +37,7 @@ def streamdf_botharms(
     ----------
     pot : Potential or list[Potential]
         The potential in which to integrate the StreamDF.
-    aA : actionAngle
+    action_angle : actionAngle
         The action-angle transformer for integrating the StreamDF.
     prog : SkyCoord
         The progenitor coordinates.
@@ -65,7 +59,7 @@ def streamdf_botharms(
         "sigv": sigv,
         "progenitor": progenitor,
         "pot": pot,
-        "aA": aA,
+        "aA": action_angle,
         "nTrackChunks": 11,
         "tdisrupt": tdisrupt,
         "ro": RO,
@@ -90,17 +84,16 @@ def galactocentric_track_from_sdf(sdf: streamdf) -> SkyCoord:
     SkyCoord
         Coordinates from ``sdf``.
     """
-    x = sdf._interpolatedObsTrackXY[:, 0] * RO
-    y = sdf._interpolatedObsTrackXY[:, 1] * RO
-    z = sdf._interpolatedObsTrackXY[:, 2] * RO
+    x = sdf._interpolatedObsTrackXY[:, 0] * RO  # noqa: SLF001
+    y = sdf._interpolatedObsTrackXY[:, 1] * RO  # noqa: SLF001
+    z = sdf._interpolatedObsTrackXY[:, 2] * RO  # noqa: SLF001
 
-    v_x = sdf._interpolatedObsTrackXY[:, 3] * VO
-    v_y = sdf._interpolatedObsTrackXY[:, 4] * VO
-    v_z = sdf._interpolatedObsTrackXY[:, 5] * VO
+    v_x = sdf._interpolatedObsTrackXY[:, 3] * VO  # noqa: SLF001
+    v_y = sdf._interpolatedObsTrackXY[:, 4] * VO  # noqa: SLF001
+    v_z = sdf._interpolatedObsTrackXY[:, 5] * VO  # noqa: SLF001
 
     # galpy is left-handed
-    sc = SkyCoord(Galactocentric(x=-x, y=y, z=z, v_x=-v_x, v_y=v_y, v_z=v_z))
-    return sc
+    return SkyCoord(Galactocentric(x=-x, y=y, z=z, v_x=-v_x, v_y=v_y, v_z=v_z))
 
 
 ##############################################################################
@@ -109,14 +102,20 @@ def galactocentric_track_from_sdf(sdf: streamdf) -> SkyCoord:
 
 # The potential
 pot = copy.deepcopy(MWPotential2014)
-aAI = actionAngleIsochroneApprox(pot=pot, b=0.8)
+aa_iso = actionAngleIsochroneApprox(pot=pot, b=0.8)
 
 # Read progenitor. Requires download_Vasiliev2019_table.py
-prog_sc = get_from_Vasiliev2019_table("NGC 104")
+prog_sc = get_from_vasiliev2019_table("NGC 104")
 prog_sc = prog_sc.transform_to("galactocentric")
 
 # Run Stream DFs
-sdft, sdfl = streamdf_botharms(pot, aAI, prog_sc, sigv=u.Quantity(0.365, u.km / u.s), tdisrupt=u.Quantity(4.5, u.Gyr))
+sdft, sdfl = streamdf_botharms(
+    pot,
+    aa_iso,
+    prog_sc,
+    sigv=u.Quantity(0.365, u.km / u.s),
+    tdisrupt=u.Quantity(4.5, u.Gyr),
+)
 
 # True track
 true_sct = galactocentric_track_from_sdf(sdft)

@@ -1,35 +1,29 @@
 """Plot frame-fit method."""
 
-##############################################################################
-# IMPORTS
 
 from __future__ import annotations
 
-# STDLIB
 import pathlib
 from typing import cast
 
-# THIRD-PARTY
 import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
+import paths
 from astropy.coordinates import CartesianRepresentation, UnitSphericalRepresentation
 from astropy.units import Quantity
-
-# FIRST-PARTY
+from conf import cmap, get_ngc5466_stream
 from trackstream.frame import fit_stream
 from trackstream.frame.fit import residual
-
-# LOCAL
-import paths
-from conf import cmap, get_NGC5466_stream
 
 ##############################################################################
 # CODE
 
 
 def wrap_stream_lon_order(
-    lon: Quantity, cut_at: Quantity = Quantity(100, u.deg), wrap_by: Quantity = Quantity(-360, u.deg)
+    lon: Quantity,
+    cut_at: Quantity = Quantity(100, u.deg),
+    wrap_by: Quantity = Quantity(-360, u.deg),
 ) -> tuple[Quantity, np.ndarray]:
     """Wrap longitude data.
 
@@ -60,7 +54,7 @@ def wrap_stream_lon_order(
 # SCRIPT
 ##############################################################################
 
-stream = get_NGC5466_stream()
+stream = get_ngc5466_stream()
 stream = fit_stream(stream, force=True, rot0=u.Quantity(110, u.deg))
 
 # ===================================================================
@@ -78,14 +72,24 @@ origin = stream["arm1"].origin.transform_to(frame)
 
 # arm1
 axs[0].scatter(
-    arm1c.icrs.ra.wrap_at(180 * u.deg), arm1c.icrs.dec, s=3, marker="*", c="tab:blue", label="NGC5466 mock stream"
+    arm1c.icrs.ra.wrap_at(180 * u.deg),
+    arm1c.icrs.dec,
+    s=3,
+    marker="*",
+    c="tab:blue",
+    label="NGC5466 mock stream",
 )
 # origin
 axs[0].scatter(origin.icrs.ra.wrap_at(180 * u.deg), origin.icrs.dec, s=10, color="red", label="origin")
 axs[0].scatter(origin.icrs.ra.wrap_at(180 * u.deg), origin.icrs.dec, s=800, facecolor="None", edgecolor="red")
 # arm2
 axs[0].scatter(
-    arm2c.icrs.ra.wrap_at(180 * u.deg), arm2c.icrs.dec, s=3, marker="*", c="tab:blue", label="NGC5466 mock stream"
+    arm2c.icrs.ra.wrap_at(180 * u.deg),
+    arm2c.icrs.dec,
+    s=3,
+    marker="*",
+    c="tab:blue",
+    label="NGC5466 mock stream",
 )
 
 axs[0].set_xlabel(r"RA (ICRS) [deg]", fontsize=13)
@@ -122,7 +126,7 @@ rotation_angles = np.linspace(-180, 180, num=1_000, dtype=float)
 r = fr.origin.data
 xyz = stream.data_coords.represent_as(UnitSphericalRepresentation).represent_as(CartesianRepresentation).xyz.value
 res = np.array(
-    [residual((float(angle), float(r.lon.deg), float(r.lat.deg)), xyz, scalar=True) for angle in rotation_angles]
+    [residual((float(angle), float(r.lon.deg), float(r.lat.deg)), xyz, scalar=True) for angle in rotation_angles],
 )
 axs[2].scatter(rotation_angles, res, color="gray")
 

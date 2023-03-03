@@ -1,38 +1,32 @@
 """Download data from Vasiliev (2019) and save as an ECSV."""
 
-##############################################################################
-# IMPORTS
 
-# STDLIB
 import copy
 
-# THIRD-PARTY
 import asdf
 import astropy.coordinates as coords
 import astropy.units as u
 import galpy.potential as gpot
 import numpy as np
+import paths
 from astropy.table import QTable, vstack
 from astropy.units import Quantity
+from conf import RO, VO, GC_47TUC_Mass, get_from_vasiliev2019_table
 from galpy.df import streamspraydf
 from galpy.orbit import Orbit
 from galpy.potential import MWPotential2014, Potential
-
-# LOCAL
-import paths
-from conf import RO, VO, GC_47TUC_Mass, get_from_Vasiliev2019_table
 
 ##############################################################################
 # CODE
 
 
-def streamspraydf_botharms(
+def streamspraydf_botharms(  # noqa: PLR0913
     progenitor_mass: Quantity,
     progenitor_sc: coords.SkyCoord,
     pot: Potential | list[Potential] = MWPotential2014,
     tdisrupt: Quantity = u.Quantity(4.5, u.Gyr),
-    meankvec: list[float] = [2.0, 0.0, 0.3, 0.0, 0.0, 0.0],
-    sigkvec: list[float] = [0.4, 0.0, 0.4, 0.5, 0.5, 0.0],
+    meankvec: list[float] | tuple[float, ...] = (2.0, 0.0, 0.3, 0.0, 0.0, 0.0),
+    sigkvec: list[float] | tuple[float, ...] = (0.4, 0.0, 0.4, 0.5, 0.5, 0.0),
 ) -> tuple[streamspraydf, streamspraydf, Orbit]:
     """Return a streamspraydf for both trailing and leading arms.
 
@@ -66,8 +60,8 @@ def streamspraydf_botharms(
         "progenitor_mass": progenitor_mass,
         "progenitor": progenitor,
         "tdisrupt": tdisrupt,
-        "meankvec": meankvec,
-        "sigkvec": sigkvec,
+        "meankvec": list(meankvec),
+        "sigkvec": list(sigkvec),
         "ro": RO,
         "vo": VO,
     }
@@ -84,37 +78,40 @@ def streamspraydf_botharms(
 ##############################################################################
 
 # Get stream
-gc47T_sc = get_from_Vasiliev2019_table("NGC 104")
+gc47t_sc = get_from_vasiliev2019_table("NGC 104")
 pot = copy.deepcopy(MWPotential2014)
 gpot.turn_physical_off(pot)
 
 # Origin at progenitor -> frame (necessary b/c galpy's GC)
 frame = coords.Galactocentric()
-origin = gc47T_sc.transform_to(frame)
+origin = gc47t_sc.transform_to(frame)
 
 # Parameters
 tdisrupt = Quantity(2, u.Gyr)
 
 # Run stream-spray
-gc47T_sst, gc47T_ssl, gc47T_prog = streamspraydf_botharms(
-    pot=pot, progenitor_mass=GC_47TUC_Mass, progenitor_sc=gc47T_sc, tdisrupt=tdisrupt
+gc47t_sst, gc47t_ssl, gc47t_prog = streamspraydf_botharms(
+    pot=pot,
+    progenitor_mass=GC_47TUC_Mass,
+    progenitor_sc=gc47t_sc,
+    tdisrupt=tdisrupt,
 )
 
 # Integrate
 np.random.seed(4)
-RvRl, dtl = gc47T_ssl.sample(n=200, returndt=True, integrate=True)
-RvRt, dtt = gc47T_sst.sample(n=200, returndt=True, integrate=True)
+RvRl, dtl = gc47t_ssl.sample(n=200, returndt=True, integrate=True)
+RvRt, dtt = gc47t_sst.sample(n=200, returndt=True, integrate=True)
 
 # Get SkyCoord(s)
-gc47T_ssl_sc = RvRl.SkyCoord(ro=RO, vo=VO).transform_to(frame)
-gc47T_sst_sc = RvRt.SkyCoord(ro=RO, vo=VO).transform_to(frame)
+gc47t_ssl_sc = RvRl.SkyCoord(ro=RO, vo=VO).transform_to(frame)
+gc47t_sst_sc = RvRt.SkyCoord(ro=RO, vo=VO).transform_to(frame)
 
 # Make data table
 datal = QTable()
-datal["coords"] = gc47T_ssl_sc
+datal["coords"] = gc47t_ssl_sc
 datal["arm"] = "arm1"
 datat = QTable()
-datat["coords"] = gc47T_sst_sc
+datat["coords"] = gc47t_sst_sc
 datat["arm"] = "arm2"
 data = vstack((datal, datat))
 data = data.group_by("arm")

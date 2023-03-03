@@ -1,29 +1,21 @@
 """Show SOM run on a solar-circle mock stream."""
 
-##############################################################################
-# IMPORTS
 
-# STDLIB
 import pathlib
 import warnings
 
-# THIRD-PARTY
 import asdf
 import astropy.coordinates as coords
 import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
+import paths
+from conf import LENGTH, cmap
 from matplotlib.gridspec import GridSpec
 from matplotlib.patheffects import withStroke
-
-# FIRST-PARTY
 from trackstream import Stream
 from trackstream.track import FitterStreamArmTrack
 from trackstream.track.width import Cartesian3DWidth, Widths
-
-# LOCAL
-import paths
-from conf import LENGTH, cmap
 
 ##############################################################################
 # SCRIPT
@@ -43,7 +35,7 @@ stream = Stream.from_data(data, origin=origin, frame=frame, name="Solar Circle")
 
 # The Stream width
 stream_width0 = Widths(
-    {LENGTH: Cartesian3DWidth(x=u.Quantity(100, u.pc), y=u.Quantity(100, u.pc), z=u.Quantity(100, u.pc))}
+    {LENGTH: Cartesian3DWidth(x=u.Quantity(100, u.pc), y=u.Quantity(100, u.pc), z=u.Quantity(100, u.pc))},
 )
 
 # Fitter
@@ -58,7 +50,10 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
 
     _ = stream.fit_track(
-        fitters=fitters, som_kw={"num_iteration": int(1e4), "progress": False}, composite=True, force=True
+        fitters=fitters,
+        som_kw={"num_iteration": int(1e4), "progress": False},
+        composite=True,
+        force=True,
     )
 
 
@@ -81,7 +76,12 @@ ax1.scatter(stream.data_coords.x, stream.data_coords.y, c=color_array, cmap=cmap
 
 for som in stream.track.som.values():
     ax1.scatter(
-        som.init_prototypes.x, som.init_prototypes.y, edgecolor="black", facecolors="none", s=40, label="SOM prototypes"
+        som.init_prototypes.x,
+        som.init_prototypes.y,
+        edgecolor="black",
+        facecolors="none",
+        s=40,
+        label="SOM prototypes",
     )
 
 # origin

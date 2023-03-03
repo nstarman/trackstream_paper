@@ -1,33 +1,25 @@
 """Run TrackStream on GD-1 data."""
 
-##############################################################################
-# IMPORTS
 
 from __future__ import annotations
 
-# STDLIB
 import pathlib
 
-# THIRD-PARTY
 import astropy.coordinates as coords
 import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
+import paths
 from astropy.table import QTable
+from conf import LENGTH
 from gala import coordinates as gc
 from matplotlib.collections import EllipseCollection
 from palettable.scientific.diverging import Roma_3
-
-# FIRST-PARTY
 from trackstream import Stream
 from trackstream.track.fit import FitterStreamArmTrack, Times
 from trackstream.track.fit.utils import _v2c
 from trackstream.track.utils import covariance_ellipse
 from trackstream.track.width import UnitSphericalWidth, Widths
-
-# LOCAL
-import paths
-from conf import LENGTH
 
 ##############################################################################
 # SCRIPTS
@@ -110,7 +102,13 @@ axs[1, 0].scatter(origin.phi1, origin.phi2, s=10, color="red", label="origin")
 axs[1, 0].scatter(origin.phi1, origin.phi2, s=800, facecolor="None", edgecolor="red")
 # data
 axs[1, 0].scatter(
-    arm1c.phi1, arm1c.phi2, s=1, c=np.arange(len(arm1c)), label=full_name, marker="*", cmap=Roma_3.mpl_colormap
+    arm1c.phi1,
+    arm1c.phi2,
+    s=1,
+    c=np.arange(len(arm1c)),
+    label=full_name,
+    marker="*",
+    cmap=Roma_3.mpl_colormap,
 )
 # som
 som1 = stream["arm1"].track.som
@@ -129,13 +127,19 @@ axs[2, 0].scatter(origin.phi1, origin.phi2, s=10, color="red", label="origin")
 axs[2, 0].scatter(origin.phi1, origin.phi2, s=800, facecolor="None", edgecolor="red")
 # data
 axs[2, 0].scatter(
-    arm1c.phi1, arm1c.phi2, s=1, c=np.arange(len(arm1c)), label=full_name, marker="*", cmap=Roma_3.mpl_colormap
+    arm1c.phi1,
+    arm1c.phi2,
+    s=1,
+    c=np.arange(len(arm1c)),
+    label=full_name,
+    marker="*",
+    cmap=Roma_3.mpl_colormap,
 )
 # kalman
 track = stream["arm1"].track
 path = track.path
-crd = _v2c(track.kalman, np.array(path._meta["smooth"].x[:, ::2]))
-Ps = path._meta["smooth"].P[:, 0:4:2, 0:4:2]
+crd = _v2c(track.kalman, np.array(path._meta["smooth"].x[:, ::2]))  # noqa: SLF001
+Ps = path._meta["smooth"].P[:, 0:4:2, 0:4:2]  # noqa: SLF001
 
 x, y = crd.phi1, crd.phi2
 axs[2, 0].plot(x.value, y.value, label=f"track {track.name}", zorder=100, c="k")

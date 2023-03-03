@@ -1,24 +1,18 @@
 """Mock stream at the solar circle."""
 
-# STDLIB
-from typing import Union, cast
+from typing import TypeAlias, cast
 
-# THIRD-PARTY
 import asdf
 import astropy.units as u
 import numpy as np
+import paths
 from astropy.coordinates import BaseRepresentation, CartesianRepresentation, SkyCoord
 from astropy.table import QTable
 from astropy.units import Quantity
 from galpy import potential
 from galpy.orbit import Orbit
 from numpy.random import Generator, default_rng
-
-# FIRST-PARTY
 from trackstream._typing import CoordinateType
-
-# LOCAL
-import paths
 
 __author__ = "Nathaniel Starkman"
 __credits__ = ["Jo Bovy"]
@@ -31,9 +25,9 @@ stop: int = 200
 num: int = 100
 unit = u.Unit("Myr")
 
-UnitType = Union[u.Unit, u.IrreducibleUnit, u.UnitBase, u.FunctionUnitBase]
-CoordinateLikeType = Union[CoordinateType, str]
-RepresentationLikeType = Union[BaseRepresentation, str]
+UnitType: TypeAlias = u.Unit | u.IrreducibleUnit | u.UnitBase | u.FunctionUnitBase
+CoordinateLikeType: TypeAlias = CoordinateType | str
+RepresentationLikeType: TypeAlias = BaseRepresentation | str
 
 ##############################################################################
 # CODE
@@ -45,8 +39,11 @@ def get_orbit(stop: float = stop, num: int = num, unit: UnitType = unit) -> Orbi
     Parameters
     ----------
     stop: float
+        Stop time for integration.
     num : int
+        Number of points in integration.
     unit : `~astropy.units.Unit`
+        Unit of integration time.
 
     Returns
     -------
@@ -78,8 +75,16 @@ def make_ordered_orbit_data(
     Parameters
     ----------
     stop : float
+        Stop time for integration.
     num : int
+        Number of points in integration.
     unit : Unit
+        Unit of integration time.
+
+    frame : CoordinateLikeType
+        Frame to transform to.
+    representation_type : RepresentationLikeType
+        Representation to transform to.
 
     Returns
     -------
@@ -114,8 +119,16 @@ def make_unordered_orbit_data(
     Parameters
     ----------
     stop : float
+        Stop time for integration.
     num : int
+        Number of points in integration.
     unit : Unit
+        Unit of integration time.
+
+    frame : CoordinateLikeType
+        Frame to transform to.
+    representation_type : RepresentationLikeType
+        Representation to transform to.
 
     Returns
     -------
@@ -125,19 +138,17 @@ def make_unordered_orbit_data(
     # Ordered data
     osc = make_ordered_orbit_data(stop=stop, num=num, unit=unit, frame=frame, representation_type=representation_type)
     # Shuffle the data
-    # shuffler, _ = make_shuffler(len(osc))
     rng = default_rng(seed=0)
     shuffler = np.arange(len(osc))  # start with index array
     rng.shuffle(shuffler)  # shuffle array in-place
 
-    usc = cast("SkyCoord", osc[shuffler])
-    return usc
+    return cast("SkyCoord", osc[shuffler])
 
 
 # -------------------------------------------------------------------
 
 
-def make_noisy_orbit_data(
+def make_noisy_orbit_data(  # noqa: PLR0913
     stop: float = stop,
     num: int = num,
     sigma: dict[str, u.Quantity] | None = None,
@@ -151,10 +162,20 @@ def make_noisy_orbit_data(
     Parameters
     ----------
     stop : float
+        Stop time for integration.
     num : int
+        Number of points in integration.
     sigma : dict[str, Quantity] or None, optional
         Errors in Galactocentric Cartesian coordinates.
     unit : Unit
+        Unit of integration time.
+
+    frame : CoordinateLikeType
+        Frame to transform to.
+    representation_type : RepresentationLikeType
+        Representation to transform to.
+    rnd : int or `~numpy.random.Generator`, optional
+        Random state.
 
     Returns
     -------
@@ -172,7 +193,11 @@ def make_noisy_orbit_data(
 
     # Unordered data
     usc = make_unordered_orbit_data(
-        stop=stop, num=num, unit=unit, frame="galactocentric", representation_type="cartesian"
+        stop=stop,
+        num=num,
+        unit=unit,
+        frame="galactocentric",
+        representation_type="cartesian",
     )
 
     # Noisy SkyCoord with gaussian-convolved values.

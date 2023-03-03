@@ -1,31 +1,23 @@
 """Plot an example of the SOM method."""
 
-##############################################################################
-# IMPORTS
 
-# STDLIB
 import pathlib
 import warnings
 
-# THIRD-PARTY
 import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
-
-# FIRST-PARTY
+import paths
+from conf import LENGTH, cmap, cnorm, get_ngc5466_stream
 from trackstream.frame import fit_stream
 from trackstream.track import FitterStreamArmTrack
 from trackstream.track.width import UnitSphericalWidth, Widths
-
-# LOCAL
-import paths
-from conf import LENGTH, cmap, cnorm, get_NGC5466_stream
 
 ##############################################################################
 # SCRIPT
 
 # Get stream
-stream = get_NGC5466_stream()
+stream = get_ngc5466_stream()
 # Fit frame
 stream = fit_stream(stream, force=True, rot0=u.Quantity(110, u.deg))
 
@@ -44,7 +36,10 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
 
     track = stream.fit_track(
-        fitters=fitters, som_kw={"num_iteration": int(1e3), "progress": False}, composite=True, force=True
+        fitters=fitters,
+        som_kw={"num_iteration": int(1e3), "progress": False},
+        composite=True,
+        force=True,
     )
 
 
@@ -53,7 +48,16 @@ with warnings.catch_warnings():
 
 fig = plt.figure(figsize=(8, 4))
 gs = fig.add_gridspec(
-    2, 2, width_ratios=(30, 1), height_ratios=(2, 7), left=0.1, right=0.9, bottom=0.1, top=0.9, wspace=0.05, hspace=0.05
+    2,
+    2,
+    width_ratios=(30, 1),
+    height_ratios=(2, 7),
+    left=0.1,
+    right=0.9,
+    bottom=0.1,
+    top=0.9,
+    wspace=0.05,
+    hspace=0.05,
 )
 
 ax = fig.add_subplot(gs[1, 0])
@@ -144,7 +148,6 @@ cbar.ax.set_ylabel("SOM ordering", fontsize=14)
 # separting line between stream arms
 ax.axvline(0, c="black", ls=":")
 
-# ax.set_aspect("equal")
 ax.set_xlim(None, 30)  # FIXME! show the whole stream
 
 ax.set_xlabel(r"$\phi_1$ (Stream) [$\degree$]", fontsize=16)
