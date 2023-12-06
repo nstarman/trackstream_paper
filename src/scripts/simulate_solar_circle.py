@@ -203,7 +203,7 @@ def make_noisy_orbit_data(  # noqa: PLR0913
 
     # Noisy SkyCoord with gaussian-convolved values.
     noisy: dict[str, u.Quantity] = {}
-    for n, unit in cast("u.StructuredUnit", cast("u.Quantity", usc.data)._units).items():
+    for n, unit in cast("u.StructuredUnit", cast("u.Quantity", usc.data)._units).items():  # noqa: SLF001
         mean = getattr(usc.data, n).to_value(unit)
         scale = cast("NDArray[floating[Any]]", sig[n].to_value(unit))
         noisy[n] = u.Quantity(rnd.normal(mean, scale=scale), unit=unit)

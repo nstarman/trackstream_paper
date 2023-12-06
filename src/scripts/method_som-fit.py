@@ -120,7 +120,7 @@ ax.scatter(ps2.lon, ps2.lat + display_offset, edgecolor="none", facecolors=color
 ax.axvline(0, c="black", ls=":")
 
 # colorbar
-cbar = plt.colorbar(pts1, cax=ax_cbar)  # TODO? include pts2 in colorbar
+cbar = plt.colorbar(pts1, cax=ax_cbar)
 cbar.solids.set_edgecolor("face")
 cbar.ax.set_ylabel("SOM ordering", **LABEL_KW)
 cbar.ax.yaxis.set_major_formatter(plt.FuncFormatter(fraction_format))

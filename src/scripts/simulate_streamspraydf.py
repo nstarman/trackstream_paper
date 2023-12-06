@@ -102,7 +102,7 @@ gc47t_sst, gc47t_ssl, gc47t_prog = streamspraydf_botharms(
 )
 
 # Integrate
-np.random.seed(4)
+np.random.seed(4)  # noqa: NPY002
 RvRl, dtl = gc47t_ssl.sample(n=200, returndt=True, integrate=True)
 RvRt, dtt = gc47t_sst.sample(n=200, returndt=True, integrate=True)
 
