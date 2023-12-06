@@ -29,7 +29,9 @@ ignore = [
     "D203",  # one-blank-line-before-class  # contra numpydoc
     "D213",  # multi-line-summary-second-line
     "ERA001",
+    "N999",
     "PLR2004",
+    "TD003",
 ]
 
 [tool.ruff.per-file-ignores]

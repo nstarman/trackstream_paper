@@ -15,13 +15,9 @@ from galpy.df import streamdf
 from galpy.orbit import Orbit
 from galpy.potential import MWPotential2014, Potential, turn_physical_on
 
-##############################################################################
-# PARAMETERS
-
-np.random.seed(4)
+np.random.seed(4)  # noqa: NPY002
 
 ##############################################################################
-# CODE
 
 
 def streamdf_botharms(

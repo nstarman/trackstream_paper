@@ -6,15 +6,8 @@ import paths
 from astropy.coordinates import Angle
 from astroquery.vizier import Vizier
 
-##############################################################################
-# PARAMETERS
-
 Vizier.ROW_LIMIT = -1
 
-
-##############################################################################
-# CODE
-##############################################################################
 
 catalog_list = Vizier.find_catalogs("J/ApJ/842/120")
 catalogs = Vizier.get_catalogs(catalog_list.keys())

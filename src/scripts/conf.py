@@ -317,7 +317,7 @@ def plot_origin(ax: Axes, x: Quantity, y: Quantity) -> None:
     ax.scatter(x, y, s=10, color="red", zorder=10)
     ax.scatter(x, y, s=400, facecolor="None", edgecolor="red", linewidth=3, zorder=-10)
 
-    # Hack for the origin
+    # circle for the origin
     c1 = Circle((x.value, y.value), radius=0, facecolor="none", linewidth=3, zorder=-10)
     c2 = Circle((x.value, y.value), radius=0, facecolor="none", zorder=10)
     ax.add_collection(PatchCollection([c1, c2], label="origin", match_original=True))
