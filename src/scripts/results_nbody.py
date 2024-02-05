@@ -1,6 +1,5 @@
 """Run TrackStream on an N-Body."""
 
-
 from __future__ import annotations
 
 import pathlib

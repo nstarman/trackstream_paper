@@ -1,6 +1,5 @@
 """Show the Kalman filter method."""
 
-
 from __future__ import annotations
 
 import pathlib

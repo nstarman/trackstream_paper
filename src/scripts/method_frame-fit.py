@@ -1,6 +1,5 @@
 """Plot frame-fit method."""
 
-
 from __future__ import annotations
 
 import pathlib
@@ -47,6 +46,7 @@ def wrap_stream_lon_order(
     -------
     lon : Quantity
     order : ndarray[int]
+
     """
     lt = np.where(lon < cut_at)[0]
     gt = np.where(lon > cut_at)[0]

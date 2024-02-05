@@ -1,6 +1,5 @@
 """Download data from Starkman et al (2019) and save as an ECSV."""
 
-
 import paths
 from astropy.table import QTable
 

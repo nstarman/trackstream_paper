@@ -1,6 +1,5 @@
 """Download data from Vasiliev (2019) and save as an ECSV."""
 
-
 import paths
 from astroquery.vizier import Vizier
 
