@@ -53,6 +53,7 @@ def get_orbit(stop: float = stop, num: int = num, unit: UnitType = unit) -> Orbi
     -------
     rep: `~galpy.orbit.Orbit`
         Integrated orbit.
+
     """
     # create time integration array
     time = np.linspace(0, stop, num=num) * unit
@@ -94,6 +95,7 @@ def make_ordered_orbit_data(
     -------
     SkyCoord
         (`num`, 3) array
+
     """
     # Get orbit
     time = np.linspace(0, stop, num=num) * unit
@@ -138,6 +140,7 @@ def make_unordered_orbit_data(
     -------
     SkyCoord
         (`num`, 3) array
+
     """
     # Ordered data
     osc = make_ordered_orbit_data(stop=stop, num=num, unit=unit, frame=frame, representation_type=representation_type)
@@ -185,6 +188,7 @@ def make_noisy_orbit_data(  # noqa: PLR0913
     -------
     SkyCoord
         (`num`, 3) array
+
     """
     # Get random state
     rnd = rnd if isinstance(rnd, Generator) else default_rng(seed=rnd)

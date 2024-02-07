@@ -1,6 +1,5 @@
 """Download data from Vasiliev (2019) and save as an ECSV."""
 
-
 import copy
 
 import asdf
@@ -46,6 +45,7 @@ def streamdf_botharms(
     -------
     tuple[streamdf, streamdf]
         Two integrated stream-df.
+
     """
     # Progenitor Orbit
     progenitor = Orbit(prog, ro=RO, vo=VO)
@@ -79,6 +79,7 @@ def galactocentric_track_from_sdf(sdf: streamdf) -> SkyCoord:
     -------
     SkyCoord
         Coordinates from ``sdf``.
+
     """
     x = sdf._interpolatedObsTrackXY[:, 0] * RO  # noqa: SLF001
     y = sdf._interpolatedObsTrackXY[:, 1] * RO  # noqa: SLF001

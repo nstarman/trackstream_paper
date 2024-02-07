@@ -1,6 +1,5 @@
 """Plot results of running TrackStream on Palomar 5."""
 
-
 import pathlib
 
 import astropy.units as u

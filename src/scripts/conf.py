@@ -123,6 +123,7 @@ def get_from_vasiliev2019_table(name: str) -> SkyCoord:
     Returns
     -------
     `astropy.coordinates.SkyCoord`
+
     """
     table = QTable.read(paths.data / "Vasiliev2019.ecsv")
     table.add_index("Name")
@@ -147,6 +148,7 @@ def get_ngc5466_stream(which: Literal["unperturbed", "perturbed"] = "unperturbed
     Returns
     -------
     Stream
+
     """
     # -------------------------------------------
     # Read data file
@@ -205,6 +207,7 @@ def get_pal5_stream(subsample: int = 100) -> Stream:
     Returns
     -------
     Stream
+
     """
     # Origin
     origin = SkyCoord(
@@ -274,6 +277,7 @@ def plot_kalman(  # noqa: PLR0913
         Label for the plot, by default "".
     zorder: int, optional
         The zorder for the plot, by default 0.
+
     """
     track = arm.track
     path = track.path

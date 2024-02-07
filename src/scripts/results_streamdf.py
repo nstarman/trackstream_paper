@@ -1,6 +1,5 @@
 """Run TrackStream on a streamdf mock stream."""
 
-
 from __future__ import annotations
 
 import pathlib

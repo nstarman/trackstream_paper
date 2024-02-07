@@ -1,6 +1,5 @@
 """Configuration."""
 
-
 import astropy.units as u
 import paths
 from astropy.coordinates import Angle
