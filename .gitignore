@@ -25,3 +25,4 @@ __pycache__
 revisions/*
 /src/scripts/nbs
 /src/tex/diff.tex
+venv/*
