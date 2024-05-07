@@ -59,7 +59,7 @@ repos:
     rev: 'v1.10.0'
     hooks:
       - id: mypy
-        additional_dependencies: ["numpy>=1.21,<1.24", typing_extensions>=4.4.0]
+        additional_dependencies: ["numpy>=1.24", typing_extensions>=4.4.0]
         args:
         - --strict
         - --ignore-missing-imports
